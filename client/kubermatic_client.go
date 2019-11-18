@@ -12,7 +12,6 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/kubermatic/go-kubermatic/client/addon"
-	"github.com/kubermatic/go-kubermatic/client/admin"
 	"github.com/kubermatic/go-kubermatic/client/aws"
 	"github.com/kubermatic/go-kubermatic/client/azure"
 	"github.com/kubermatic/go-kubermatic/client/credentials"
@@ -26,7 +25,6 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/packet"
 	"github.com/kubermatic/go-kubermatic/client/project"
 	"github.com/kubermatic/go-kubermatic/client/serviceaccounts"
-	"github.com/kubermatic/go-kubermatic/client/settings"
 	"github.com/kubermatic/go-kubermatic/client/tokens"
 	"github.com/kubermatic/go-kubermatic/client/users"
 	"github.com/kubermatic/go-kubermatic/client/versions"
@@ -78,8 +76,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 
 	cli.Addon = addon.New(transport, formats)
 
-	cli.Admin = admin.New(transport, formats)
-
 	cli.Aws = aws.New(transport, formats)
 
 	cli.Azure = azure.New(transport, formats)
@@ -105,8 +101,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Project = project.New(transport, formats)
 
 	cli.Serviceaccounts = serviceaccounts.New(transport, formats)
-
-	cli.Settings = settings.New(transport, formats)
 
 	cli.Tokens = tokens.New(transport, formats)
 
@@ -162,8 +156,6 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type Kubermatic struct {
 	Addon *addon.Client
 
-	Admin *admin.Client
-
 	Aws *aws.Client
 
 	Azure *azure.Client
@@ -190,8 +182,6 @@ type Kubermatic struct {
 
 	Serviceaccounts *serviceaccounts.Client
 
-	Settings *settings.Client
-
 	Tokens *tokens.Client
 
 	Users *users.Client
@@ -208,8 +198,6 @@ func (c *Kubermatic) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 
 	c.Addon.SetTransport(transport)
-
-	c.Admin.SetTransport(transport)
 
 	c.Aws.SetTransport(transport)
 
@@ -236,8 +224,6 @@ func (c *Kubermatic) SetTransport(transport runtime.ClientTransport) {
 	c.Project.SetTransport(transport)
 
 	c.Serviceaccounts.SetTransport(transport)
-
-	c.Settings.SetTransport(transport)
 
 	c.Tokens.SetTransport(transport)
 
