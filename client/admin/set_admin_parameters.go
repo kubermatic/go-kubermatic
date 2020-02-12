@@ -16,7 +16,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	models "github.com/kubermatic/go-kubermatic/models"
+	"github.com/kubermatic/go-kubermatic/models"
 )
 
 // NewSetAdminParams creates a new SetAdminParams object
