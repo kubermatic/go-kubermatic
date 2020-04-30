@@ -15,9 +15,6 @@ import (
 // swagger:model GCPNodeSpec
 type GCPNodeSpec struct {
 
-	// custom image
-	CustomImage string `json:"customImage,omitempty"`
-
 	// disk size
 	DiskSize int64 `json:"diskSize,omitempty"`
 

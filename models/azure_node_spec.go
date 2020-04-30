@@ -23,9 +23,6 @@ type AzureNodeSpec struct {
 	// Data disk size in GB
 	DataDiskSize int32 `json:"dataDiskSize,omitempty"`
 
-	// image ID
-	ImageID string `json:"imageID,omitempty"`
-
 	// OS disk size in GB
 	OSDiskSize int32 `json:"osDiskSize,omitempty"`
 
