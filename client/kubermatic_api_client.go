@@ -15,6 +15,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/alibaba"
 	"github.com/kubermatic/go-kubermatic/client/aws"
 	"github.com/kubermatic/go-kubermatic/client/azure"
+	"github.com/kubermatic/go-kubermatic/client/constrainttemplates"
 	"github.com/kubermatic/go-kubermatic/client/credentials"
 	"github.com/kubermatic/go-kubermatic/client/datacenter"
 	"github.com/kubermatic/go-kubermatic/client/digitalocean"
@@ -81,6 +82,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Alibaba = alibaba.New(transport, formats)
 	cli.Aws = aws.New(transport, formats)
 	cli.Azure = azure.New(transport, formats)
+	cli.Constrainttemplates = constrainttemplates.New(transport, formats)
 	cli.Credentials = credentials.New(transport, formats)
 	cli.Datacenter = datacenter.New(transport, formats)
 	cli.Digitalocean = digitalocean.New(transport, formats)
@@ -152,6 +154,8 @@ type KubermaticAPI struct {
 
 	Azure azure.ClientService
 
+	Constrainttemplates constrainttemplates.ClientService
+
 	Credentials credentials.ClientService
 
 	Datacenter datacenter.ClientService
@@ -197,6 +201,7 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Alibaba.SetTransport(transport)
 	c.Aws.SetTransport(transport)
 	c.Azure.SetTransport(transport)
+	c.Constrainttemplates.SetTransport(transport)
 	c.Credentials.SetTransport(transport)
 	c.Datacenter.SetTransport(transport)
 	c.Digitalocean.SetTransport(transport)
