@@ -25,6 +25,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/openstack"
 	"github.com/kubermatic/go-kubermatic/client/operations"
 	"github.com/kubermatic/go-kubermatic/client/packet"
+	"github.com/kubermatic/go-kubermatic/client/preset"
 	"github.com/kubermatic/go-kubermatic/client/project"
 	"github.com/kubermatic/go-kubermatic/client/seed"
 	"github.com/kubermatic/go-kubermatic/client/serviceaccounts"
@@ -92,6 +93,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Openstack = openstack.New(transport, formats)
 	cli.Operations = operations.New(transport, formats)
 	cli.Packet = packet.New(transport, formats)
+	cli.Preset = preset.New(transport, formats)
 	cli.Project = project.New(transport, formats)
 	cli.Seed = seed.New(transport, formats)
 	cli.Serviceaccounts = serviceaccounts.New(transport, formats)
@@ -174,6 +176,8 @@ type KubermaticAPI struct {
 
 	Packet packet.ClientService
 
+	Preset preset.ClientService
+
 	Project project.ClientService
 
 	Seed seed.ClientService
@@ -211,6 +215,7 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Openstack.SetTransport(transport)
 	c.Operations.SetTransport(transport)
 	c.Packet.SetTransport(transport)
+	c.Preset.SetTransport(transport)
 	c.Project.SetTransport(transport)
 	c.Seed.SetTransport(transport)
 	c.Serviceaccounts.SetTransport(transport)
