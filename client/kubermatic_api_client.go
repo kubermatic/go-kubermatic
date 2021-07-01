@@ -17,6 +17,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/aws"
 	"github.com/kubermatic/go-kubermatic/client/azure"
 	"github.com/kubermatic/go-kubermatic/client/constraint"
+	"github.com/kubermatic/go-kubermatic/client/constraints"
 	"github.com/kubermatic/go-kubermatic/client/constrainttemplates"
 	"github.com/kubermatic/go-kubermatic/client/credentials"
 	"github.com/kubermatic/go-kubermatic/client/datacenter"
@@ -89,6 +90,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Aws = aws.New(transport, formats)
 	cli.Azure = azure.New(transport, formats)
 	cli.Constraint = constraint.New(transport, formats)
+	cli.Constraints = constraints.New(transport, formats)
 	cli.Constrainttemplates = constrainttemplates.New(transport, formats)
 	cli.Credentials = credentials.New(transport, formats)
 	cli.Datacenter = datacenter.New(transport, formats)
@@ -168,6 +170,8 @@ type KubermaticAPI struct {
 
 	Constraint constraint.ClientService
 
+	Constraints constraints.ClientService
+
 	Constrainttemplates constrainttemplates.ClientService
 
 	Credentials credentials.ClientService
@@ -223,6 +227,7 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Aws.SetTransport(transport)
 	c.Azure.SetTransport(transport)
 	c.Constraint.SetTransport(transport)
+	c.Constraints.SetTransport(transport)
 	c.Constrainttemplates.SetTransport(transport)
 	c.Credentials.SetTransport(transport)
 	c.Datacenter.SetTransport(transport)
