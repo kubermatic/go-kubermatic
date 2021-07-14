@@ -22,6 +22,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/credentials"
 	"github.com/kubermatic/go-kubermatic/client/datacenter"
 	"github.com/kubermatic/go-kubermatic/client/digitalocean"
+	"github.com/kubermatic/go-kubermatic/client/etcdbackupconfig"
 	"github.com/kubermatic/go-kubermatic/client/gcp"
 	"github.com/kubermatic/go-kubermatic/client/hetzner"
 	"github.com/kubermatic/go-kubermatic/client/metric"
@@ -96,6 +97,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Credentials = credentials.New(transport, formats)
 	cli.Datacenter = datacenter.New(transport, formats)
 	cli.Digitalocean = digitalocean.New(transport, formats)
+	cli.Etcdbackupconfig = etcdbackupconfig.New(transport, formats)
 	cli.Gcp = gcp.New(transport, formats)
 	cli.Hetzner = hetzner.New(transport, formats)
 	cli.Metric = metric.New(transport, formats)
@@ -182,6 +184,8 @@ type KubermaticAPI struct {
 
 	Digitalocean digitalocean.ClientService
 
+	Etcdbackupconfig etcdbackupconfig.ClientService
+
 	Gcp gcp.ClientService
 
 	Hetzner hetzner.ClientService
@@ -236,6 +240,7 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Credentials.SetTransport(transport)
 	c.Datacenter.SetTransport(transport)
 	c.Digitalocean.SetTransport(transport)
+	c.Etcdbackupconfig.SetTransport(transport)
 	c.Gcp.SetTransport(transport)
 	c.Hetzner.SetTransport(transport)
 	c.Metric.SetTransport(transport)
