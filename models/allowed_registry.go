@@ -11,20 +11,20 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// WhitelistedRegistry WhitelistedRegistry represents a object containing a whitelisted image registry prefix
+// AllowedRegistry AllowedRegistry represents a object containing a allowed image registry prefix
 //
-// swagger:model WhitelistedRegistry
-type WhitelistedRegistry struct {
+// swagger:model AllowedRegistry
+type AllowedRegistry struct {
 
 	// name
 	Name string `json:"name,omitempty"`
 
 	// spec
-	Spec *WhitelistedRegistrySpec `json:"spec,omitempty"`
+	Spec *AllowedRegistrySpec `json:"spec,omitempty"`
 }
 
-// Validate validates this whitelisted registry
-func (m *WhitelistedRegistry) Validate(formats strfmt.Registry) error {
+// Validate validates this allowed registry
+func (m *AllowedRegistry) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateSpec(formats); err != nil {
@@ -37,7 +37,7 @@ func (m *WhitelistedRegistry) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *WhitelistedRegistry) validateSpec(formats strfmt.Registry) error {
+func (m *AllowedRegistry) validateSpec(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.Spec) { // not required
 		return nil
@@ -56,7 +56,7 @@ func (m *WhitelistedRegistry) validateSpec(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *WhitelistedRegistry) MarshalBinary() ([]byte, error) {
+func (m *AllowedRegistry) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -64,8 +64,8 @@ func (m *WhitelistedRegistry) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *WhitelistedRegistry) UnmarshalBinary(b []byte) error {
-	var res WhitelistedRegistry
+func (m *AllowedRegistry) UnmarshalBinary(b []byte) error {
+	var res AllowedRegistry
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

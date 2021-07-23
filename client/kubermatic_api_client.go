@@ -13,6 +13,8 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/addon"
 	"github.com/kubermatic/go-kubermatic/client/admin"
 	"github.com/kubermatic/go-kubermatic/client/alibaba"
+	"github.com/kubermatic/go-kubermatic/client/allowedregistries"
+	"github.com/kubermatic/go-kubermatic/client/allowedregistry"
 	"github.com/kubermatic/go-kubermatic/client/anexia"
 	"github.com/kubermatic/go-kubermatic/client/aws"
 	"github.com/kubermatic/go-kubermatic/client/azure"
@@ -39,8 +41,6 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/users"
 	"github.com/kubermatic/go-kubermatic/client/versions"
 	"github.com/kubermatic/go-kubermatic/client/vsphere"
-	"github.com/kubermatic/go-kubermatic/client/whitelistedregistries"
-	"github.com/kubermatic/go-kubermatic/client/whitelistedregistry"
 )
 
 // Default kubermatic API HTTP client.
@@ -88,6 +88,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Addon = addon.New(transport, formats)
 	cli.Admin = admin.New(transport, formats)
 	cli.Alibaba = alibaba.New(transport, formats)
+	cli.Allowedregistries = allowedregistries.New(transport, formats)
+	cli.Allowedregistry = allowedregistry.New(transport, formats)
 	cli.Anexia = anexia.New(transport, formats)
 	cli.Aws = aws.New(transport, formats)
 	cli.Azure = azure.New(transport, formats)
@@ -114,8 +116,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Users = users.New(transport, formats)
 	cli.Versions = versions.New(transport, formats)
 	cli.Vsphere = vsphere.New(transport, formats)
-	cli.Whitelistedregistries = whitelistedregistries.New(transport, formats)
-	cli.Whitelistedregistry = whitelistedregistry.New(transport, formats)
 	return cli
 }
 
@@ -165,6 +165,10 @@ type KubermaticAPI struct {
 	Admin admin.ClientService
 
 	Alibaba alibaba.ClientService
+
+	Allowedregistries allowedregistries.ClientService
+
+	Allowedregistry allowedregistry.ClientService
 
 	Anexia anexia.ClientService
 
@@ -218,10 +222,6 @@ type KubermaticAPI struct {
 
 	Vsphere vsphere.ClientService
 
-	Whitelistedregistries whitelistedregistries.ClientService
-
-	Whitelistedregistry whitelistedregistry.ClientService
-
 	Transport runtime.ClientTransport
 }
 
@@ -231,6 +231,8 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Addon.SetTransport(transport)
 	c.Admin.SetTransport(transport)
 	c.Alibaba.SetTransport(transport)
+	c.Allowedregistries.SetTransport(transport)
+	c.Allowedregistry.SetTransport(transport)
 	c.Anexia.SetTransport(transport)
 	c.Aws.SetTransport(transport)
 	c.Azure.SetTransport(transport)
@@ -257,6 +259,4 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Users.SetTransport(transport)
 	c.Versions.SetTransport(transport)
 	c.Vsphere.SetTransport(transport)
-	c.Whitelistedregistries.SetTransport(transport)
-	c.Whitelistedregistry.SetTransport(transport)
 }

@@ -16,11 +16,11 @@ import (
 // swagger:model wrBody
 type WrBody struct {
 
-	// Name of the whitelisted registry
+	// Name of the allowed registry
 	Name string `json:"name,omitempty"`
 
 	// spec
-	Spec *WhitelistedRegistrySpec `json:"spec,omitempty"`
+	Spec *AllowedRegistrySpec `json:"spec,omitempty"`
 }
 
 // Validate validates this wr body
