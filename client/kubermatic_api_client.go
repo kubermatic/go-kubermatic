@@ -28,6 +28,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/etcdrestore"
 	"github.com/kubermatic/go-kubermatic/client/gcp"
 	"github.com/kubermatic/go-kubermatic/client/hetzner"
+	"github.com/kubermatic/go-kubermatic/client/metering"
 	"github.com/kubermatic/go-kubermatic/client/metric"
 	"github.com/kubermatic/go-kubermatic/client/openstack"
 	"github.com/kubermatic/go-kubermatic/client/operations"
@@ -104,6 +105,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Etcdrestore = etcdrestore.New(transport, formats)
 	cli.Gcp = gcp.New(transport, formats)
 	cli.Hetzner = hetzner.New(transport, formats)
+	cli.Metering = metering.New(transport, formats)
 	cli.Metric = metric.New(transport, formats)
 	cli.Openstack = openstack.New(transport, formats)
 	cli.Operations = operations.New(transport, formats)
@@ -198,6 +200,8 @@ type KubermaticAPI struct {
 
 	Hetzner hetzner.ClientService
 
+	Metering metering.ClientService
+
 	Metric metric.ClientService
 
 	Openstack openstack.ClientService
@@ -250,6 +254,7 @@ func (c *KubermaticAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Etcdrestore.SetTransport(transport)
 	c.Gcp.SetTransport(transport)
 	c.Hetzner.SetTransport(transport)
+	c.Metering.SetTransport(transport)
 	c.Metric.SetTransport(transport)
 	c.Openstack.SetTransport(transport)
 	c.Operations.SetTransport(transport)
