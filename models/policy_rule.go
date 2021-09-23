@@ -33,11 +33,11 @@ type PolicyRule struct {
 	// +optional
 	ResourceNames []string `json:"resourceNames"`
 
-	// Resources is a list of resources this rule applies to. '*' represents all resources.
+	// Resources is a list of resources this rule applies to.  ResourceAll represents all resources.
 	// +optional
 	Resources []string `json:"resources"`
 
-	// Verbs is a list of Verbs that apply to ALL the ResourceKinds and AttributeRestrictions contained in this rule. '*' represents all verbs.
+	// Verbs is a list of Verbs that apply to ALL the ResourceKinds and AttributeRestrictions contained in this rule.  VerbAll represents all kinds.
 	Verbs []string `json:"verbs"`
 }
 

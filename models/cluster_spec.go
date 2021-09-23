@@ -60,9 +60,6 @@ type ClusterSpec struct {
 	// cluster network
 	ClusterNetwork *ClusterNetworkingConfig `json:"clusterNetwork,omitempty"`
 
-	// cni plugin
-	CniPlugin *CNIPluginSettings `json:"cniPlugin,omitempty"`
-
 	// mla
 	Mla *MLASettings `json:"mla,omitempty"`
 
@@ -99,10 +96,6 @@ func (m *ClusterSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateClusterNetwork(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateCniPlugin(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -199,23 +192,6 @@ func (m *ClusterSpec) validateClusterNetwork(formats strfmt.Registry) error {
 		if err := m.ClusterNetwork.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("clusterNetwork")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *ClusterSpec) validateCniPlugin(formats strfmt.Registry) error {
-	if swag.IsZero(m.CniPlugin) { // not required
-		return nil
-	}
-
-	if m.CniPlugin != nil {
-		if err := m.CniPlugin.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("cniPlugin")
 			}
 			return err
 		}
@@ -329,10 +305,6 @@ func (m *ClusterSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateCniPlugin(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateMla(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -411,20 +383,6 @@ func (m *ClusterSpec) contextValidateClusterNetwork(ctx context.Context, formats
 		if err := m.ClusterNetwork.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("clusterNetwork")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *ClusterSpec) contextValidateCniPlugin(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.CniPlugin != nil {
-		if err := m.CniPlugin.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("cniPlugin")
 			}
 			return err
 		}
