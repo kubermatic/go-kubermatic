@@ -25,6 +25,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/credentials"
 	"github.com/kubermatic/go-kubermatic/client/datacenter"
 	"github.com/kubermatic/go-kubermatic/client/digitalocean"
+	"github.com/kubermatic/go-kubermatic/client/eks"
 	"github.com/kubermatic/go-kubermatic/client/etcdbackupconfig"
 	"github.com/kubermatic/go-kubermatic/client/etcdrestore"
 	"github.com/kubermatic/go-kubermatic/client/gcp"
@@ -107,6 +108,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Credentials = credentials.New(transport, formats)
 	cli.Datacenter = datacenter.New(transport, formats)
 	cli.Digitalocean = digitalocean.New(transport, formats)
+	cli.Eks = eks.New(transport, formats)
 	cli.Etcdbackupconfig = etcdbackupconfig.New(transport, formats)
 	cli.Etcdrestore = etcdrestore.New(transport, formats)
 	cli.Gcp = gcp.New(transport, formats)
@@ -204,6 +206,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Digitalocean digitalocean.ClientService
 
+	Eks eks.ClientService
+
 	Etcdbackupconfig etcdbackupconfig.ClientService
 
 	Etcdrestore etcdrestore.ClientService
@@ -271,6 +275,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Credentials.SetTransport(transport)
 	c.Datacenter.SetTransport(transport)
 	c.Digitalocean.SetTransport(transport)
+	c.Eks.SetTransport(transport)
 	c.Etcdbackupconfig.SetTransport(transport)
 	c.Etcdrestore.SetTransport(transport)
 	c.Gcp.SetTransport(transport)
