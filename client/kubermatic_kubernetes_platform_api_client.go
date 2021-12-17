@@ -33,6 +33,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/get"
 	"github.com/kubermatic/go-kubermatic/client/gke"
 	"github.com/kubermatic/go-kubermatic/client/hetzner"
+	"github.com/kubermatic/go-kubermatic/client/kubevirt"
 	"github.com/kubermatic/go-kubermatic/client/metering"
 	"github.com/kubermatic/go-kubermatic/client/metric"
 	"github.com/kubermatic/go-kubermatic/client/mlaadminsetting"
@@ -119,6 +120,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Get = get.New(transport, formats)
 	cli.Gke = gke.New(transport, formats)
 	cli.Hetzner = hetzner.New(transport, formats)
+	cli.Kubevirt = kubevirt.New(transport, formats)
 	cli.Metering = metering.New(transport, formats)
 	cli.Metric = metric.New(transport, formats)
 	cli.Mlaadminsetting = mlaadminsetting.New(transport, formats)
@@ -228,6 +230,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Hetzner hetzner.ClientService
 
+	Kubevirt kubevirt.ClientService
+
 	Metering metering.ClientService
 
 	Metric metric.ClientService
@@ -295,6 +299,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Get.SetTransport(transport)
 	c.Gke.SetTransport(transport)
 	c.Hetzner.SetTransport(transport)
+	c.Kubevirt.SetTransport(transport)
 	c.Metering.SetTransport(transport)
 	c.Metric.SetTransport(transport)
 	c.Mlaadminsetting.SetTransport(transport)
