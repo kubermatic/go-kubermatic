@@ -13,32 +13,32 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// NodeSettings NodeSettings are node specific flags which can be configured on datacenter level.
+// NodeSettings NodeSettings are node specific flags which can be configured on datacenter level
 //
 // swagger:model NodeSettings
 type NodeSettings struct {
 
 	// Optional: The hyperkube image to use. Currently only Flatcar
 	// makes use of this option.
-	HyperkubeImage string `json:"hyperkubeImage,omitempty"`
+	HyperkubeImage string `json:"hyperkube_image,omitempty"`
 
 	// Optional: These image registries will be configured as insecure
 	// on the container runtime.
-	InsecureRegistries []string `json:"insecureRegistries"`
+	InsecureRegistries []string `json:"insecure_registries"`
 
 	// Optional: Translates to --pod-infra-container-image on the kubelet.
 	// If not set, the kubelet will default it.
-	PauseImage string `json:"pauseImage,omitempty"`
+	PauseImage string `json:"pause_image,omitempty"`
 
 	// Optional: These image registries will be configured as registry mirrors
 	// on the container runtime.
-	RegistryMirrors []string `json:"registryMirrors"`
+	RegistryMirrors []string `json:"registry_mirrors"`
 
 	// http proxy
-	HTTPProxy ProxyValue `json:"httpProxy,omitempty"`
+	HTTPProxy ProxyValue `json:"http_proxy,omitempty"`
 
 	// no proxy
-	NoProxy ProxyValue `json:"noProxy,omitempty"`
+	NoProxy ProxyValue `json:"no_proxy,omitempty"`
 }
 
 // Validate validates this node settings
@@ -66,7 +66,7 @@ func (m *NodeSettings) validateHTTPProxy(formats strfmt.Registry) error {
 
 	if err := m.HTTPProxy.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("httpProxy")
+			return ve.ValidateName("http_proxy")
 		}
 		return err
 	}
@@ -81,7 +81,7 @@ func (m *NodeSettings) validateNoProxy(formats strfmt.Registry) error {
 
 	if err := m.NoProxy.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("noProxy")
+			return ve.ValidateName("no_proxy")
 		}
 		return err
 	}
@@ -111,7 +111,7 @@ func (m *NodeSettings) contextValidateHTTPProxy(ctx context.Context, formats str
 
 	if err := m.HTTPProxy.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("httpProxy")
+			return ve.ValidateName("http_proxy")
 		}
 		return err
 	}
@@ -123,7 +123,7 @@ func (m *NodeSettings) contextValidateNoProxy(ctx context.Context, formats strfm
 
 	if err := m.NoProxy.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("noProxy")
+			return ve.ValidateName("no_proxy")
 		}
 		return err
 	}

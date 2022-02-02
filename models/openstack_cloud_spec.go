@@ -34,7 +34,7 @@ type OpenstackCloudSpec struct {
 	// When specified, all worker nodes will receive a public ip from this floating ip pool
 	//
 	// Note that the network is external if the "External" field is set to true
-	FloatingIPPool string `json:"floatingIPPool,omitempty"`
+	FloatingIPPool string `json:"floatingIpPool,omitempty"`
 
 	// Network holds the name of the internal network
 	// When specified, all worker nodes will be attached to this network. If not specified, a network, subnet & router will be created
@@ -42,16 +42,17 @@ type OpenstackCloudSpec struct {
 	// Note that the network is internal if the "External" field is set to false
 	Network string `json:"network,omitempty"`
 
-	// node ports allowed IP range
+	// NodePortsAllowedIPRange is the range of addresses allowed to access the cluster nodeports.
+	// If not specified, the default value is 0.0.0.0/0, i.e., no restriction.
 	NodePortsAllowedIPRange string `json:"nodePortsAllowedIPRange,omitempty"`
 
 	// password
 	Password string `json:"password,omitempty"`
 
-	// project, formally known as tenant.
+	// project
 	Project string `json:"project,omitempty"`
 
-	// project id, formally known as tenantID.
+	// project ID
 	ProjectID string `json:"projectID,omitempty"`
 
 	// router ID
@@ -62,6 +63,12 @@ type OpenstackCloudSpec struct {
 
 	// subnet ID
 	SubnetID string `json:"subnetID,omitempty"`
+
+	// tenant
+	Tenant string `json:"tenant,omitempty"`
+
+	// tenant ID
+	TenantID string `json:"tenantID,omitempty"`
 
 	// Used internally during cluster creation
 	Token string `json:"token,omitempty"`

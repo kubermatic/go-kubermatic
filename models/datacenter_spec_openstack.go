@@ -13,33 +13,33 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// DatacenterSpecOpenstack DatacenterSpecOpenstack describes an OpenStack datacenter.
+// DatacenterSpecOpenstack DatacenterSpecOpenstack describes an OpenStack datacenter
 //
 // swagger:model DatacenterSpecOpenstack
 type DatacenterSpecOpenstack struct {
 
 	// auth URL
-	AuthURL string `json:"authURL,omitempty"`
+	AuthURL string `json:"auth_url,omitempty"`
 
 	// availability zone
-	AvailabilityZone string `json:"availabilityZone,omitempty"`
+	AvailabilityZone string `json:"availability_zone,omitempty"`
 
 	// Used for automatic network creation
-	DNSServers []string `json:"dnsServers"`
+	DNSServers []string `json:"dns_servers"`
 
 	// Optional: List of enabled flavors for the given datacenter
-	EnabledFlavors []string `json:"enabledFlavors"`
+	EnabledFlavors []string `json:"enabled_flavors"`
 
 	// Optional
-	EnforceFloatingIP bool `json:"enforceFloatingIP,omitempty"`
+	EnforceFloatingIP bool `json:"enforce_floating_ip,omitempty"`
 
 	// Optional
-	IgnoreVolumeAZ bool `json:"ignoreVolumeAZ,omitempty"`
+	IgnoreVolumeAZ bool `json:"ignore_volume_az,omitempty"`
 
 	// Optional: Gets mapped to the "manage-security-groups" setting in the cloud config.
 	// See https://kubernetes.io/docs/concepts/cluster-administration/cloud-providers/#load-balancer
 	// This setting defaults to true.
-	ManageSecurityGroups bool `json:"manageSecurityGroups,omitempty"`
+	ManageSecurityGroups bool `json:"manage_security_groups,omitempty"`
 
 	// region
 	Region string `json:"region,omitempty"`
@@ -47,18 +47,18 @@ type DatacenterSpecOpenstack struct {
 	// Optional: Gets mapped to the "trust-device-path" setting in the cloud config.
 	// See https://kubernetes.io/docs/concepts/cluster-administration/cloud-providers/#block-storage
 	// This setting defaults to false.
-	TrustDevicePath bool `json:"trustDevicePath,omitempty"`
+	TrustDevicePath bool `json:"trust_device_path,omitempty"`
 
 	// Optional: Gets mapped to the "use-octavia" setting in the cloud config.
 	// use-octavia is enabled by default in CCM since v1.17.0, and disabled by
 	// default with the in-tree cloud provider.
-	UseOctavia bool `json:"useOctavia,omitempty"`
+	UseOctavia bool `json:"use_octavia,omitempty"`
 
 	// images
 	Images ImageList `json:"images,omitempty"`
 
 	// node size requirements
-	NodeSizeRequirements *OpenstackNodeSizeRequirements `json:"nodeSizeRequirements,omitempty"`
+	NodeSizeRequirements *OpenstackNodeSizeRequirements `json:"node_size_requirements,omitempty"`
 }
 
 // Validate validates this datacenter spec openstack
@@ -104,7 +104,7 @@ func (m *DatacenterSpecOpenstack) validateNodeSizeRequirements(formats strfmt.Re
 	if m.NodeSizeRequirements != nil {
 		if err := m.NodeSizeRequirements.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("nodeSizeRequirements")
+				return ve.ValidateName("node_size_requirements")
 			}
 			return err
 		}
@@ -148,7 +148,7 @@ func (m *DatacenterSpecOpenstack) contextValidateNodeSizeRequirements(ctx contex
 	if m.NodeSizeRequirements != nil {
 		if err := m.NodeSizeRequirements.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("nodeSizeRequirements")
+				return ve.ValidateName("node_size_requirements")
 			}
 			return err
 		}

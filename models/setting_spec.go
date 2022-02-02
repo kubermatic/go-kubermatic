@@ -54,6 +54,9 @@ type SettingSpec struct {
 	// cleanup options
 	CleanupOptions *CleanupOptions `json:"cleanupOptions,omitempty"`
 
+	// cluster type options
+	ClusterTypeOptions ClusterType `json:"clusterTypeOptions,omitempty"`
+
 	// custom links
 	CustomLinks CustomLinks `json:"customLinks,omitempty"`
 
@@ -72,6 +75,10 @@ func (m *SettingSpec) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCleanupOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateClusterTypeOptions(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -109,6 +116,21 @@ func (m *SettingSpec) validateCleanupOptions(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *SettingSpec) validateClusterTypeOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.ClusterTypeOptions) { // not required
+		return nil
+	}
+
+	if err := m.ClusterTypeOptions.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("clusterTypeOptions")
+		}
+		return err
 	}
 
 	return nil
@@ -188,6 +210,10 @@ func (m *SettingSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateClusterTypeOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCustomLinks(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -219,6 +245,18 @@ func (m *SettingSpec) contextValidateCleanupOptions(ctx context.Context, formats
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *SettingSpec) contextValidateClusterTypeOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.ClusterTypeOptions.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("clusterTypeOptions")
+		}
+		return err
 	}
 
 	return nil

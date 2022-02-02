@@ -21,9 +21,6 @@ type RuleGroup struct {
 	// contains the RuleGroup data. Ref: https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/#rule_group
 	Data []uint8 `json:"data"`
 
-	// name
-	Name string `json:"name,omitempty"`
-
 	// type
 	Type RuleGroupType `json:"type,omitempty"`
 }

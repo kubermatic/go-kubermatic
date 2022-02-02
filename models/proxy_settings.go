@@ -14,16 +14,16 @@ import (
 )
 
 // ProxySettings ProxySettings allow configuring a HTTP proxy for the controlplanes
-// and nodes.
+// and nodes
 //
 // swagger:model ProxySettings
 type ProxySettings struct {
 
 	// http proxy
-	HTTPProxy ProxyValue `json:"httpProxy,omitempty"`
+	HTTPProxy ProxyValue `json:"http_proxy,omitempty"`
 
 	// no proxy
-	NoProxy ProxyValue `json:"noProxy,omitempty"`
+	NoProxy ProxyValue `json:"no_proxy,omitempty"`
 }
 
 // Validate validates this proxy settings
@@ -51,7 +51,7 @@ func (m *ProxySettings) validateHTTPProxy(formats strfmt.Registry) error {
 
 	if err := m.HTTPProxy.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("httpProxy")
+			return ve.ValidateName("http_proxy")
 		}
 		return err
 	}
@@ -66,7 +66,7 @@ func (m *ProxySettings) validateNoProxy(formats strfmt.Registry) error {
 
 	if err := m.NoProxy.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("noProxy")
+			return ve.ValidateName("no_proxy")
 		}
 		return err
 	}
@@ -96,7 +96,7 @@ func (m *ProxySettings) contextValidateHTTPProxy(ctx context.Context, formats st
 
 	if err := m.HTTPProxy.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("httpProxy")
+			return ve.ValidateName("http_proxy")
 		}
 		return err
 	}
@@ -108,7 +108,7 @@ func (m *ProxySettings) contextValidateNoProxy(ctx context.Context, formats strf
 
 	if err := m.NoProxy.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("noProxy")
+			return ve.ValidateName("no_proxy")
 		}
 		return err
 	}

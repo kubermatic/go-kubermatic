@@ -19,7 +19,7 @@ import (
 type AlibabaCloudSpec struct {
 
 	// access key ID
-	AccessKeyID string `json:"accessKeyID,omitempty"`
+	AccessKeyID string `json:"accessKeyId,omitempty"`
 
 	// access key secret
 	AccessKeySecret string `json:"accessKeySecret,omitempty"`

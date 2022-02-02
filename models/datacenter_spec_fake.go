@@ -12,13 +12,13 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// DatacenterSpecFake DatacenterSpecFake describes a fake datacenter.
+// DatacenterSpecFake DatacenterSpecFake describes a fake datacenter
 //
 // swagger:model DatacenterSpecFake
 type DatacenterSpecFake struct {
 
 	// fake property
-	FakeProperty string `json:"fakeProperty,omitempty"`
+	FakeProperty string `json:"fake_property,omitempty"`
 }
 
 // Validate validates this datacenter spec fake

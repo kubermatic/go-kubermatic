@@ -22,7 +22,7 @@ type SeedSettings struct {
 	SeedDNSOverwrite string `json:"seedDNSOverwrite,omitempty"`
 
 	// metering
-	Metering *MeteringConfiguration `json:"metering,omitempty"`
+	Metering *MeteringConfigurations `json:"metering,omitempty"`
 
 	// mla
 	Mla *MLA `json:"mla,omitempty"`

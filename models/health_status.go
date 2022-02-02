@@ -14,7 +14,7 @@ import (
 // HealthStatus health status
 //
 // swagger:model HealthStatus
-type HealthStatus string
+type HealthStatus int64
 
 // Validate validates this health status
 func (m HealthStatus) Validate(formats strfmt.Registry) error {

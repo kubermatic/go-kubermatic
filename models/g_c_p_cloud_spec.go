@@ -21,7 +21,8 @@ type GCPCloudSpec struct {
 	// network
 	Network string `json:"network,omitempty"`
 
-	// node ports allowed IP range
+	// NodePortsAllowedIPRange is the range of addresses allowed to access the cluster nodeports.
+	// If not specified, the default value is 0.0.0.0/0, i.e., no restriction.
 	NodePortsAllowedIPRange string `json:"nodePortsAllowedIPRange,omitempty"`
 
 	// service account

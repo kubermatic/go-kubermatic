@@ -19,7 +19,7 @@ import (
 type AWSCloudSpec struct {
 
 	// access key ID
-	AccessKeyID string `json:"accessKeyID,omitempty"`
+	AccessKeyID string `json:"accessKeyId,omitempty"`
 
 	// assume role a r n
 	AssumeRoleARN string `json:"assumeRoleARN,omitempty"`
@@ -33,7 +33,8 @@ type AWSCloudSpec struct {
 	// instance profile name
 	InstanceProfileName string `json:"instanceProfileName,omitempty"`
 
-	// node ports allowed IP range
+	// NodePortsAllowedIPRange is the range of addresses allowed to access the cluster nodeports.
+	// If not specified, the default value is 0.0.0.0/0, i.e., no restriction.
 	NodePortsAllowedIPRange string `json:"nodePortsAllowedIPRange,omitempty"`
 
 	// DEPRECATED. Don't care for the role name. We only require the ControlPlaneRoleARN to be set so the control plane
@@ -42,7 +43,7 @@ type AWSCloudSpec struct {
 	RoleName string `json:"roleName,omitempty"`
 
 	// route table ID
-	RouteTableID string `json:"routeTableID,omitempty"`
+	RouteTableID string `json:"routeTableId,omitempty"`
 
 	// secret access key
 	SecretAccessKey string `json:"secretAccessKey,omitempty"`
@@ -51,7 +52,7 @@ type AWSCloudSpec struct {
 	SecurityGroupID string `json:"securityGroupID,omitempty"`
 
 	// v p c ID
-	VPCID string `json:"vpcID,omitempty"`
+	VPCID string `json:"vpcId,omitempty"`
 
 	// credentials reference
 	CredentialsReference *GlobalSecretKeySelector `json:"credentialsReference,omitempty"`
