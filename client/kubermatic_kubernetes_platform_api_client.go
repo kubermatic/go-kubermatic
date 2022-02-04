@@ -38,6 +38,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/metering"
 	"github.com/kubermatic/go-kubermatic/client/metric"
 	"github.com/kubermatic/go-kubermatic/client/mlaadminsetting"
+	"github.com/kubermatic/go-kubermatic/client/nutanix"
 	"github.com/kubermatic/go-kubermatic/client/openstack"
 	"github.com/kubermatic/go-kubermatic/client/operations"
 	"github.com/kubermatic/go-kubermatic/client/packet"
@@ -125,6 +126,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Metering = metering.New(transport, formats)
 	cli.Metric = metric.New(transport, formats)
 	cli.Mlaadminsetting = mlaadminsetting.New(transport, formats)
+	cli.Nutanix = nutanix.New(transport, formats)
 	cli.Openstack = openstack.New(transport, formats)
 	cli.Operations = operations.New(transport, formats)
 	cli.Packet = packet.New(transport, formats)
@@ -240,6 +242,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Mlaadminsetting mlaadminsetting.ClientService
 
+	Nutanix nutanix.ClientService
+
 	Openstack openstack.ClientService
 
 	Operations operations.ClientService
@@ -304,6 +308,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Metering.SetTransport(transport)
 	c.Metric.SetTransport(transport)
 	c.Mlaadminsetting.SetTransport(transport)
+	c.Nutanix.SetTransport(transport)
 	c.Openstack.SetTransport(transport)
 	c.Operations.SetTransport(transport)
 	c.Packet.SetTransport(transport)
