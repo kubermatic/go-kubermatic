@@ -54,6 +54,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/users"
 	"github.com/kubermatic/go-kubermatic/client/version"
 	"github.com/kubermatic/go-kubermatic/client/versions"
+	"github.com/kubermatic/go-kubermatic/client/vmwareclouddirector"
 	"github.com/kubermatic/go-kubermatic/client/vsphere"
 )
 
@@ -143,6 +144,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Users = users.New(transport, formats)
 	cli.Version = version.New(transport, formats)
 	cli.Versions = versions.New(transport, formats)
+	cli.Vmwareclouddirector = vmwareclouddirector.New(transport, formats)
 	cli.Vsphere = vsphere.New(transport, formats)
 	return cli
 }
@@ -276,6 +278,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Versions versions.ClientService
 
+	Vmwareclouddirector vmwareclouddirector.ClientService
+
 	Vsphere vsphere.ClientService
 
 	Transport runtime.ClientTransport
@@ -328,5 +332,6 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Users.SetTransport(transport)
 	c.Version.SetTransport(transport)
 	c.Versions.SetTransport(transport)
+	c.Vmwareclouddirector.SetTransport(transport)
 	c.Vsphere.SetTransport(transport)
 }
