@@ -45,6 +45,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/packet"
 	"github.com/kubermatic/go-kubermatic/client/preset"
 	"github.com/kubermatic/go-kubermatic/client/project"
+	"github.com/kubermatic/go-kubermatic/client/resource"
 	"github.com/kubermatic/go-kubermatic/client/rulegroup"
 	"github.com/kubermatic/go-kubermatic/client/seed"
 	"github.com/kubermatic/go-kubermatic/client/serviceaccounts"
@@ -135,6 +136,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Packet = packet.New(transport, formats)
 	cli.Preset = preset.New(transport, formats)
 	cli.Project = project.New(transport, formats)
+	cli.Resource = resource.New(transport, formats)
 	cli.Rulegroup = rulegroup.New(transport, formats)
 	cli.Seed = seed.New(transport, formats)
 	cli.Serviceaccounts = serviceaccounts.New(transport, formats)
@@ -260,6 +262,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Project project.ClientService
 
+	Resource resource.ClientService
+
 	Rulegroup rulegroup.ClientService
 
 	Seed seed.ClientService
@@ -323,6 +327,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Packet.SetTransport(transport)
 	c.Preset.SetTransport(transport)
 	c.Project.SetTransport(transport)
+	c.Resource.SetTransport(transport)
 	c.Rulegroup.SetTransport(transport)
 	c.Seed.SetTransport(transport)
 	c.Serviceaccounts.SetTransport(transport)
