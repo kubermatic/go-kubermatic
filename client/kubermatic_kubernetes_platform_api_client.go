@@ -17,6 +17,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/allowedregistries"
 	"github.com/kubermatic/go-kubermatic/client/allowedregistry"
 	"github.com/kubermatic/go-kubermatic/client/anexia"
+	"github.com/kubermatic/go-kubermatic/client/applications"
 	"github.com/kubermatic/go-kubermatic/client/aws"
 	"github.com/kubermatic/go-kubermatic/client/azure"
 	"github.com/kubermatic/go-kubermatic/client/backupcredentials"
@@ -108,6 +109,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Allowedregistries = allowedregistries.New(transport, formats)
 	cli.Allowedregistry = allowedregistry.New(transport, formats)
 	cli.Anexia = anexia.New(transport, formats)
+	cli.Applications = applications.New(transport, formats)
 	cli.Aws = aws.New(transport, formats)
 	cli.Azure = azure.New(transport, formats)
 	cli.Backupcredentials = backupcredentials.New(transport, formats)
@@ -206,6 +208,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Anexia anexia.ClientService
 
+	Applications applications.ClientService
+
 	Aws aws.ClientService
 
 	Azure azure.ClientService
@@ -299,6 +303,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Allowedregistries.SetTransport(transport)
 	c.Allowedregistry.SetTransport(transport)
 	c.Anexia.SetTransport(transport)
+	c.Applications.SetTransport(transport)
 	c.Aws.SetTransport(transport)
 	c.Azure.SetTransport(transport)
 	c.Backupcredentials.SetTransport(transport)
