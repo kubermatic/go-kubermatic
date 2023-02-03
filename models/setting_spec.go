@@ -39,6 +39,9 @@ type SettingSpec struct {
 	// enable o ID c kubeconfig
 	EnableOIDCKubeconfig bool `json:"enableOIDCKubeconfig,omitempty"`
 
+	// EnableWebTerminal enables the Web Terminal feature for the user clusters.
+	EnableWebTerminal bool `json:"enableWebTerminal,omitempty"`
+
 	// mla alertmanager prefix
 	MlaAlertmanagerPrefix string `json:"mlaAlertmanagerPrefix,omitempty"`
 
@@ -57,14 +60,23 @@ type SettingSpec struct {
 	// custom links
 	CustomLinks CustomLinks `json:"customLinks,omitempty"`
 
+	// default quota
+	DefaultQuota *DefaultProjectResourceQuota `json:"defaultQuota,omitempty"`
+
 	// machine deployment VM resource quota
-	MachineDeploymentVMResourceQuota *MachineDeploymentVMResourceQuota `json:"machineDeploymentVMResourceQuota,omitempty"`
+	MachineDeploymentVMResourceQuota *MachineFlavorFilter `json:"machineDeploymentVMResourceQuota,omitempty"`
 
 	// mla options
 	MlaOptions *MlaOptions `json:"mlaOptions,omitempty"`
 
+	// notifications
+	Notifications *NotificationsOptions `json:"notifications,omitempty"`
+
 	// opa options
 	OpaOptions *OpaOptions `json:"opaOptions,omitempty"`
+
+	// provider configuration
+	ProviderConfiguration *ProviderConfiguration `json:"providerConfiguration,omitempty"`
 }
 
 // Validate validates this setting spec
@@ -79,6 +91,10 @@ func (m *SettingSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateDefaultQuota(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateMachineDeploymentVMResourceQuota(formats); err != nil {
 		res = append(res, err)
 	}
@@ -87,7 +103,15 @@ func (m *SettingSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateNotifications(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateOpaOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateProviderConfiguration(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -133,6 +157,25 @@ func (m *SettingSpec) validateCustomLinks(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *SettingSpec) validateDefaultQuota(formats strfmt.Registry) error {
+	if swag.IsZero(m.DefaultQuota) { // not required
+		return nil
+	}
+
+	if m.DefaultQuota != nil {
+		if err := m.DefaultQuota.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("defaultQuota")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("defaultQuota")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *SettingSpec) validateMachineDeploymentVMResourceQuota(formats strfmt.Registry) error {
 	if swag.IsZero(m.MachineDeploymentVMResourceQuota) { // not required
 		return nil
@@ -171,6 +214,25 @@ func (m *SettingSpec) validateMlaOptions(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *SettingSpec) validateNotifications(formats strfmt.Registry) error {
+	if swag.IsZero(m.Notifications) { // not required
+		return nil
+	}
+
+	if m.Notifications != nil {
+		if err := m.Notifications.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("notifications")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("notifications")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *SettingSpec) validateOpaOptions(formats strfmt.Registry) error {
 	if swag.IsZero(m.OpaOptions) { // not required
 		return nil
@@ -182,6 +244,25 @@ func (m *SettingSpec) validateOpaOptions(formats strfmt.Registry) error {
 				return ve.ValidateName("opaOptions")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("opaOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SettingSpec) validateProviderConfiguration(formats strfmt.Registry) error {
+	if swag.IsZero(m.ProviderConfiguration) { // not required
+		return nil
+	}
+
+	if m.ProviderConfiguration != nil {
+		if err := m.ProviderConfiguration.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("providerConfiguration")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("providerConfiguration")
 			}
 			return err
 		}
@@ -202,6 +283,10 @@ func (m *SettingSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateDefaultQuota(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateMachineDeploymentVMResourceQuota(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -210,7 +295,15 @@ func (m *SettingSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateNotifications(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateOpaOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateProviderConfiguration(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -250,6 +343,22 @@ func (m *SettingSpec) contextValidateCustomLinks(ctx context.Context, formats st
 	return nil
 }
 
+func (m *SettingSpec) contextValidateDefaultQuota(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DefaultQuota != nil {
+		if err := m.DefaultQuota.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("defaultQuota")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("defaultQuota")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *SettingSpec) contextValidateMachineDeploymentVMResourceQuota(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.MachineDeploymentVMResourceQuota != nil {
@@ -282,6 +391,22 @@ func (m *SettingSpec) contextValidateMlaOptions(ctx context.Context, formats str
 	return nil
 }
 
+func (m *SettingSpec) contextValidateNotifications(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Notifications != nil {
+		if err := m.Notifications.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("notifications")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("notifications")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *SettingSpec) contextValidateOpaOptions(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.OpaOptions != nil {
@@ -290,6 +415,22 @@ func (m *SettingSpec) contextValidateOpaOptions(ctx context.Context, formats str
 				return ve.ValidateName("opaOptions")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("opaOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *SettingSpec) contextValidateProviderConfiguration(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ProviderConfiguration != nil {
+		if err := m.ProviderConfiguration.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("providerConfiguration")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("providerConfiguration")
 			}
 			return err
 		}
