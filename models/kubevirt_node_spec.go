@@ -25,9 +25,13 @@ type KubevirtNodeSpec struct {
 	CPUs *string `json:"cpus"`
 
 	// FlavorName states name of the virtual-machine flavor.
+	//
+	// Deprecated. In favor of Instancetype and Preference.
 	FlavorName string `json:"flavorName,omitempty"`
 
 	// FlavorProfile states name of virtual-machine profile.
+	//
+	// Deprecated. In favor of Instancetype and Preference.
 	FlavorProfile string `json:"flavorProfile,omitempty"`
 
 	// Memory states the memory that kubevirt node will have.
@@ -35,9 +39,13 @@ type KubevirtNodeSpec struct {
 	Memory *string `json:"memory"`
 
 	// PodAffinityPreset describes pod affinity scheduling rules
+	//
+	// Deprecated: in favor of topology spread constraints
 	PodAffinityPreset string `json:"podAffinityPreset,omitempty"`
 
 	// PodAntiAffinityPreset describes pod anti-affinity scheduling rules
+	//
+	// Deprecated: in favor of topology spread constraints
 	PodAntiAffinityPreset string `json:"podAntiAffinityPreset,omitempty"`
 
 	// PrimaryDiskOSImage states the source from which the imported image will be downloaded.
@@ -58,8 +66,17 @@ type KubevirtNodeSpec struct {
 	// SecondaryDisks contains list of secondary-disks
 	SecondaryDisks []*SecondaryDisks `json:"secondaryDisks"`
 
+	// TopologySpreadConstraints describes topology spread constraints for VMs.
+	TopologySpreadConstraints []*TopologySpreadConstraint `json:"topologySpreadConstraints"`
+
+	// instancetype
+	Instancetype *InstancetypeMatcher `json:"instancetype,omitempty"`
+
 	// node affinity preset
 	NodeAffinityPreset *NodeAffinityPreset `json:"nodeAffinityPreset,omitempty"`
+
+	// preference
+	Preference *PreferenceMatcher `json:"preference,omitempty"`
 }
 
 // Validate validates this kubevirt node spec
@@ -90,7 +107,19 @@ func (m *KubevirtNodeSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateTopologySpreadConstraints(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateInstancetype(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateNodeAffinityPreset(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePreference(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -171,6 +200,51 @@ func (m *KubevirtNodeSpec) validateSecondaryDisks(formats strfmt.Registry) error
 	return nil
 }
 
+func (m *KubevirtNodeSpec) validateTopologySpreadConstraints(formats strfmt.Registry) error {
+	if swag.IsZero(m.TopologySpreadConstraints) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.TopologySpreadConstraints); i++ {
+		if swag.IsZero(m.TopologySpreadConstraints[i]) { // not required
+			continue
+		}
+
+		if m.TopologySpreadConstraints[i] != nil {
+			if err := m.TopologySpreadConstraints[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("topologySpreadConstraints" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("topologySpreadConstraints" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *KubevirtNodeSpec) validateInstancetype(formats strfmt.Registry) error {
+	if swag.IsZero(m.Instancetype) { // not required
+		return nil
+	}
+
+	if m.Instancetype != nil {
+		if err := m.Instancetype.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("instancetype")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("instancetype")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *KubevirtNodeSpec) validateNodeAffinityPreset(formats strfmt.Registry) error {
 	if swag.IsZero(m.NodeAffinityPreset) { // not required
 		return nil
@@ -190,6 +264,25 @@ func (m *KubevirtNodeSpec) validateNodeAffinityPreset(formats strfmt.Registry) e
 	return nil
 }
 
+func (m *KubevirtNodeSpec) validatePreference(formats strfmt.Registry) error {
+	if swag.IsZero(m.Preference) { // not required
+		return nil
+	}
+
+	if m.Preference != nil {
+		if err := m.Preference.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("preference")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("preference")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this kubevirt node spec based on the context it is used
 func (m *KubevirtNodeSpec) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -198,7 +291,19 @@ func (m *KubevirtNodeSpec) ContextValidate(ctx context.Context, formats strfmt.R
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateTopologySpreadConstraints(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateInstancetype(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateNodeAffinityPreset(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidatePreference(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -228,6 +333,42 @@ func (m *KubevirtNodeSpec) contextValidateSecondaryDisks(ctx context.Context, fo
 	return nil
 }
 
+func (m *KubevirtNodeSpec) contextValidateTopologySpreadConstraints(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.TopologySpreadConstraints); i++ {
+
+		if m.TopologySpreadConstraints[i] != nil {
+			if err := m.TopologySpreadConstraints[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("topologySpreadConstraints" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("topologySpreadConstraints" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *KubevirtNodeSpec) contextValidateInstancetype(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Instancetype != nil {
+		if err := m.Instancetype.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("instancetype")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("instancetype")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *KubevirtNodeSpec) contextValidateNodeAffinityPreset(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.NodeAffinityPreset != nil {
@@ -236,6 +377,22 @@ func (m *KubevirtNodeSpec) contextValidateNodeAffinityPreset(ctx context.Context
 				return ve.ValidateName("nodeAffinityPreset")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("nodeAffinityPreset")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *KubevirtNodeSpec) contextValidatePreference(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Preference != nil {
+		if err := m.Preference.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("preference")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("preference")
 			}
 			return err
 		}
