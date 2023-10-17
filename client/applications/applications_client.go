@@ -28,9 +28,15 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	CreateApplicationDefinition(params *CreateApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateApplicationDefinitionCreated, error)
+
 	CreateApplicationInstallation(params *CreateApplicationInstallationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateApplicationInstallationCreated, error)
 
+	DeleteApplicationDefinition(params *DeleteApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationDefinitionOK, error)
+
 	DeleteApplicationInstallation(params *DeleteApplicationInstallationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationInstallationOK, error)
+
+	GetApplicationDefinition(params *GetApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetApplicationDefinitionOK, error)
 
 	GetApplicationInstallation(params *GetApplicationInstallationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetApplicationInstallationOK, error)
 
@@ -38,9 +44,49 @@ type ClientService interface {
 
 	ListApplicationInstallations(params *ListApplicationInstallationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListApplicationInstallationsOK, error)
 
+	UpdateApplicationDefinition(params *UpdateApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationDefinitionOK, error)
+
 	UpdateApplicationInstallation(params *UpdateApplicationInstallationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationInstallationOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+CreateApplicationDefinition Creates ApplicationDefinition into the given cluster
+*/
+func (a *Client) CreateApplicationDefinition(params *CreateApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateApplicationDefinitionCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCreateApplicationDefinitionParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "createApplicationDefinition",
+		Method:             "POST",
+		PathPattern:        "/api/v2/applicationdefinitions",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &CreateApplicationDefinitionReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*CreateApplicationDefinitionCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*CreateApplicationDefinitionDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
@@ -82,6 +128,44 @@ func (a *Client) CreateApplicationInstallation(params *CreateApplicationInstalla
 }
 
 /*
+DeleteApplicationDefinition Deletes the given ApplicationDefinition
+*/
+func (a *Client) DeleteApplicationDefinition(params *DeleteApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationDefinitionOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDeleteApplicationDefinitionParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "deleteApplicationDefinition",
+		Method:             "DELETE",
+		PathPattern:        "/api/v2/applicationdefinitions/{appdef_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DeleteApplicationDefinitionReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DeleteApplicationDefinitionOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DeleteApplicationDefinitionDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 DeleteApplicationInstallation Deletes the given ApplicationInstallation
 */
 func (a *Client) DeleteApplicationInstallation(params *DeleteApplicationInstallationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteApplicationInstallationOK, error) {
@@ -116,6 +200,44 @@ func (a *Client) DeleteApplicationInstallation(params *DeleteApplicationInstalla
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*DeleteApplicationInstallationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetApplicationDefinition Gets the given ApplicationDefinition
+*/
+func (a *Client) GetApplicationDefinition(params *GetApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetApplicationDefinitionOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetApplicationDefinitionParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getApplicationDefinition",
+		Method:             "GET",
+		PathPattern:        "/api/v2/applicationdefinitions/{appdef_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetApplicationDefinitionReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetApplicationDefinitionOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetApplicationDefinitionDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -230,6 +352,44 @@ func (a *Client) ListApplicationInstallations(params *ListApplicationInstallatio
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListApplicationInstallationsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateApplicationDefinition Updates the given ApplicationDefinition
+*/
+func (a *Client) UpdateApplicationDefinition(params *UpdateApplicationDefinitionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateApplicationDefinitionOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateApplicationDefinitionParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "updateApplicationDefinition",
+		Method:             "PUT",
+		PathPattern:        "/api/v2/applicationdefinitions/{appdef_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateApplicationDefinitionReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateApplicationDefinitionOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateApplicationDefinitionDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

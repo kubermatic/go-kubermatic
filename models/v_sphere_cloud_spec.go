@@ -18,6 +18,12 @@ import (
 // swagger:model VSphereCloudSpec
 type VSphereCloudSpec struct {
 
+	// Optional: BasePath configures a vCenter folder path that KKP will create an individual cluster folder in.
+	// If it's an absolute path, the RootPath configured in the datacenter will be ignored. If it is a relative path,
+	// the BasePath part will be appended to the RootPath (if set) to construct the full path.
+	// +optional
+	BasePath string `json:"basePath,omitempty"`
+
 	// Datastore to be used for storing virtual machines and as a default for
 	// dynamic volume provisioning, it is mutually exclusive with
 	// DatastoreCluster.
@@ -34,6 +40,10 @@ type VSphereCloudSpec struct {
 	// +optional
 	Folder string `json:"folder,omitempty"`
 
+	// Networks is the list of vSphere networks.
+	// +optional
+	Networks []string `json:"networks"`
+
 	// Password is the vSphere user password.
 	// +optional
 	Password string `json:"password,omitempty"`
@@ -46,14 +56,13 @@ type VSphereCloudSpec struct {
 	// StoragePolicy to be used for storage provisioning
 	StoragePolicy string `json:"storagePolicy,omitempty"`
 
-	// This is category for the machine deployment tags
-	TagCategoryID string `json:"tagCategoryID,omitempty"`
-
 	// Username is the vSphere user name.
 	// +optional
 	Username string `json:"username,omitempty"`
 
 	// VMNetName is the name of the vSphere network.
+	// Deprecated: Use networks instead.
+	// +optional
 	VMNetName string `json:"vmNetName,omitempty"`
 
 	// credentials reference
@@ -61,6 +70,9 @@ type VSphereCloudSpec struct {
 
 	// infra management user
 	InfraManagementUser *VSphereCredentials `json:"infraManagementUser,omitempty"`
+
+	// tags
+	Tags *VSphereTag `json:"tags,omitempty"`
 }
 
 // Validate validates this v sphere cloud spec
@@ -72,6 +84,10 @@ func (m *VSphereCloudSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateInfraManagementUser(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTags(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -119,6 +135,25 @@ func (m *VSphereCloudSpec) validateInfraManagementUser(formats strfmt.Registry) 
 	return nil
 }
 
+func (m *VSphereCloudSpec) validateTags(formats strfmt.Registry) error {
+	if swag.IsZero(m.Tags) { // not required
+		return nil
+	}
+
+	if m.Tags != nil {
+		if err := m.Tags.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("tags")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tags")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this v sphere cloud spec based on the context it is used
 func (m *VSphereCloudSpec) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -128,6 +163,10 @@ func (m *VSphereCloudSpec) ContextValidate(ctx context.Context, formats strfmt.R
 	}
 
 	if err := m.contextValidateInfraManagementUser(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTags(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -161,6 +200,22 @@ func (m *VSphereCloudSpec) contextValidateInfraManagementUser(ctx context.Contex
 				return ve.ValidateName("infraManagementUser")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("infraManagementUser")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *VSphereCloudSpec) contextValidateTags(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Tags != nil {
+		if err := m.Tags.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("tags")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("tags")
 			}
 			return err
 		}

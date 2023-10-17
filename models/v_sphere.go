@@ -17,6 +17,11 @@ import (
 // swagger:model VSphere
 type VSphere struct {
 
+	// BasePath configures a vCenter folder path that KKP will create an individual cluster folder in.
+	// If it's an absolute path, the RootPath configured in the datacenter will be ignored. If it is a relative path,
+	// the BasePath part will be appended to the RootPath to construct the full path.
+	BasePath string `json:"basePath,omitempty"`
+
 	// If datacenter is set, this preset is only applicable to the
 	// configured datacenter.
 	Datacenter string `json:"datacenter,omitempty"`
@@ -30,6 +35,9 @@ type VSphere struct {
 	// Only enabled presets will be available in the KKP dashboard.
 	Enabled bool `json:"enabled,omitempty"`
 
+	// networks
+	Networks []string `json:"networks"`
+
 	// password
 	Password string `json:"password,omitempty"`
 
@@ -39,7 +47,7 @@ type VSphere struct {
 	// username
 	Username string `json:"username,omitempty"`
 
-	// VM net name
+	// Deprecated: Use networks instead.
 	VMNetName string `json:"vmNetName,omitempty"`
 }
 

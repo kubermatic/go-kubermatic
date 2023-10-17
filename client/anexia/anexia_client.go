@@ -28,53 +28,15 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	ListAnexiaTemplates(params *ListAnexiaTemplatesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaTemplatesOK, error)
-
 	ListAnexiaTemplatesNoCredentialsV2(params *ListAnexiaTemplatesNoCredentialsV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaTemplatesNoCredentialsV2OK, error)
-
-	ListAnexiaVlans(params *ListAnexiaVlansParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaVlansOK, error)
 
 	ListAnexiaVlansNoCredentialsV2(params *ListAnexiaVlansNoCredentialsV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaVlansNoCredentialsV2OK, error)
 
+	ListProjectAnexiaTemplates(params *ListProjectAnexiaTemplatesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAnexiaTemplatesOK, error)
+
+	ListProjectAnexiaVlans(params *ListProjectAnexiaVlansParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAnexiaVlansOK, error)
+
 	SetTransport(transport runtime.ClientTransport)
-}
-
-/*
-ListAnexiaTemplates Lists templates from anexia
-*/
-func (a *Client) ListAnexiaTemplates(params *ListAnexiaTemplatesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaTemplatesOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewListAnexiaTemplatesParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "listAnexiaTemplates",
-		Method:             "GET",
-		PathPattern:        "/api/v1/providers/anexia/templates",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &ListAnexiaTemplatesReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*ListAnexiaTemplatesOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*ListAnexiaTemplatesDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
@@ -116,44 +78,6 @@ func (a *Client) ListAnexiaTemplatesNoCredentialsV2(params *ListAnexiaTemplatesN
 }
 
 /*
-ListAnexiaVlans Lists vlans from anexia
-*/
-func (a *Client) ListAnexiaVlans(params *ListAnexiaVlansParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaVlansOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewListAnexiaVlansParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "listAnexiaVlans",
-		Method:             "GET",
-		PathPattern:        "/api/v1/providers/anexia/vlans",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &ListAnexiaVlansReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*ListAnexiaVlansOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*ListAnexiaVlansDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 ListAnexiaVlansNoCredentialsV2 Lists vlans from Anexia
 */
 func (a *Client) ListAnexiaVlansNoCredentialsV2(params *ListAnexiaVlansNoCredentialsV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAnexiaVlansNoCredentialsV2OK, error) {
@@ -188,6 +112,82 @@ func (a *Client) ListAnexiaVlansNoCredentialsV2(params *ListAnexiaVlansNoCredent
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListAnexiaVlansNoCredentialsV2Default)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListProjectAnexiaTemplates lists templates from anexia
+*/
+func (a *Client) ListProjectAnexiaTemplates(params *ListProjectAnexiaTemplatesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAnexiaTemplatesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectAnexiaTemplatesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectAnexiaTemplates",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/anexia/templates",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectAnexiaTemplatesReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectAnexiaTemplatesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectAnexiaTemplatesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListProjectAnexiaVlans lists v l a ns from anexia
+*/
+func (a *Client) ListProjectAnexiaVlans(params *ListProjectAnexiaVlansParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAnexiaVlansOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectAnexiaVlansParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectAnexiaVlans",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/anexia/vlans",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectAnexiaVlansReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectAnexiaVlansOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectAnexiaVlansDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
