@@ -18,11 +18,20 @@ import (
 // swagger:model ApplicationInstallationSpec
 type ApplicationInstallationSpec struct {
 
+	// ValuesBlock specifies values overrides that are passed to helm templating. Comments are preserved.
+	ValuesBlock string `json:"valuesBlock,omitempty"`
+
 	// application ref
 	ApplicationRef *ApplicationRef `json:"applicationRef,omitempty"`
 
+	// deploy options
+	DeployOptions *DeployOptions `json:"deployOptions,omitempty"`
+
 	// namespace
 	Namespace *NamespaceSpec `json:"namespace,omitempty"`
+
+	// reconciliation interval
+	ReconciliationInterval Duration `json:"reconciliationInterval,omitempty"`
 
 	// values
 	Values RawExtension `json:"values,omitempty"`
@@ -33,6 +42,10 @@ func (m *ApplicationInstallationSpec) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateApplicationRef(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDeployOptions(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,6 +70,25 @@ func (m *ApplicationInstallationSpec) validateApplicationRef(formats strfmt.Regi
 				return ve.ValidateName("applicationRef")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("applicationRef")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ApplicationInstallationSpec) validateDeployOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.DeployOptions) { // not required
+		return nil
+	}
+
+	if m.DeployOptions != nil {
+		if err := m.DeployOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("deployOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("deployOptions")
 			}
 			return err
 		}
@@ -92,6 +124,10 @@ func (m *ApplicationInstallationSpec) ContextValidate(ctx context.Context, forma
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateDeployOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateNamespace(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -110,6 +146,22 @@ func (m *ApplicationInstallationSpec) contextValidateApplicationRef(ctx context.
 				return ve.ValidateName("applicationRef")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("applicationRef")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ApplicationInstallationSpec) contextValidateDeployOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DeployOptions != nil {
+		if err := m.DeployOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("deployOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("deployOptions")
 			}
 			return err
 		}

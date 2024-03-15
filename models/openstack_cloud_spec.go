@@ -24,6 +24,11 @@ type OpenstackCloudSpec struct {
 	// application credential secret
 	ApplicationCredentialSecret string `json:"applicationCredentialSecret,omitempty"`
 
+	// Flag to configure enablement of topology support for the Cinder CSI plugin.
+	// This requires Nova and Cinder to have matching availability zones configured.
+	// +optional
+	CinderTopologyEnabled bool `json:"cinderTopologyEnabled,omitempty"`
+
 	// domain
 	Domain string `json:"domain,omitempty"`
 
@@ -58,7 +63,7 @@ type OpenstackCloudSpec struct {
 	IngressHostnameSuffix string `json:"ingressHostnameSuffix,omitempty"`
 
 	// Network holds the name of the internal network
-	// When specified, all worker nodes will be attached to this network. If not specified, a network, subnet & router will be created
+	// When specified, all worker nodes will be attached to this network. If not specified, a network, subnet & router will be created.
 	//
 	// Note that the network is internal if the "External" field is set to false
 	Network string `json:"network,omitempty"`

@@ -19,11 +19,31 @@ import (
 // swagger:model ApplicationDefinitionSpec
 type ApplicationDefinitionSpec struct {
 
+	// DefaultValuesBlock specifies default values for the UI which are passed to helm templating when creating an application. Comments are preserved.
+	DefaultValuesBlock string `json:"defaultValuesBlock,omitempty"`
+
 	// Description of the application. what is its purpose
 	Description string `json:"description,omitempty"`
 
+	// DocumentationURL holds a link to official documentation of the Application
+	// Alternatively this can be a link to the Readme of a chart in a git repository
+	DocumentationURL string `json:"documentationURL,omitempty"`
+
+	// Logo of the Application as a base64 encoded svg
+	Logo string `json:"logo,omitempty"`
+
+	// LogoFormat contains logo format of the configured Application. Options are "svg+xml" and "png"
+	// +kubebuilder:validation:Enum=svg+xml;png
+	LogoFormat string `json:"logoFormat,omitempty"`
+
+	// SourceURL holds a link to the official source code mirror or git repository of the application
+	SourceURL string `json:"sourceURL,omitempty"`
+
 	// Available version for this application
 	Versions []*ApplicationVersion `json:"versions"`
+
+	// default deploy options
+	DefaultDeployOptions *DeployOptions `json:"defaultDeployOptions,omitempty"`
 
 	// default values
 	DefaultValues RawExtension `json:"defaultValues,omitempty"`
@@ -37,6 +57,10 @@ func (m *ApplicationDefinitionSpec) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateVersions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDefaultDeployOptions(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -76,6 +100,25 @@ func (m *ApplicationDefinitionSpec) validateVersions(formats strfmt.Registry) er
 	return nil
 }
 
+func (m *ApplicationDefinitionSpec) validateDefaultDeployOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.DefaultDeployOptions) { // not required
+		return nil
+	}
+
+	if m.DefaultDeployOptions != nil {
+		if err := m.DefaultDeployOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("defaultDeployOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("defaultDeployOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *ApplicationDefinitionSpec) validateMethod(formats strfmt.Registry) error {
 	if swag.IsZero(m.Method) { // not required
 		return nil
@@ -98,6 +141,10 @@ func (m *ApplicationDefinitionSpec) ContextValidate(ctx context.Context, formats
 	var res []error
 
 	if err := m.contextValidateVersions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateDefaultDeployOptions(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -126,6 +173,22 @@ func (m *ApplicationDefinitionSpec) contextValidateVersions(ctx context.Context,
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *ApplicationDefinitionSpec) contextValidateDefaultDeployOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DefaultDeployOptions != nil {
+		if err := m.DefaultDeployOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("defaultDeployOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("defaultDeployOptions")
+			}
+			return err
+		}
 	}
 
 	return nil

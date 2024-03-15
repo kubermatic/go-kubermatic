@@ -18,11 +18,15 @@ import (
 // swagger:model DatacenterSpecOpenstack
 type DatacenterSpecOpenstack struct {
 
-	// auth URL
+	// Authentication URL
 	AuthURL string `json:"authURL,omitempty"`
 
-	// availability zone
+	// Used to configure availability zone.
 	AvailabilityZone string `json:"availabilityZone,omitempty"`
+
+	// Optional: configures enablement of topology support for the Cinder CSI Plugin.
+	// This requires Nova and Cinder to have matching availability zones configured.
+	CSICinderTopologyEnabled bool `json:"csiCinderTopologyEnabled,omitempty"`
 
 	// Used for automatic network creation
 	DNSServers []string `json:"dnsServers"`
@@ -43,7 +47,7 @@ type DatacenterSpecOpenstack struct {
 	// This setting defaults to true.
 	ManageSecurityGroups bool `json:"manageSecurityGroups,omitempty"`
 
-	// region
+	// Authentication region name
 	Region string `json:"region,omitempty"`
 
 	// Optional: Gets mapped to the "trust-device-path" setting in the cloud config.

@@ -27,8 +27,10 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/constrainttemplates"
 	"github.com/kubermatic/go-kubermatic/client/credentials"
 	"github.com/kubermatic/go-kubermatic/client/datacenter"
+	"github.com/kubermatic/go-kubermatic/client/default_cluster"
 	"github.com/kubermatic/go-kubermatic/client/digitalocean"
 	"github.com/kubermatic/go-kubermatic/client/eks"
+	"github.com/kubermatic/go-kubermatic/client/equinixmetal"
 	"github.com/kubermatic/go-kubermatic/client/etcdbackupconfig"
 	"github.com/kubermatic/go-kubermatic/client/etcdrestore"
 	"github.com/kubermatic/go-kubermatic/client/gcp"
@@ -121,8 +123,10 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Constrainttemplates = constrainttemplates.New(transport, formats)
 	cli.Credentials = credentials.New(transport, formats)
 	cli.Datacenter = datacenter.New(transport, formats)
+	cli.DefaultCluster = default_cluster.New(transport, formats)
 	cli.Digitalocean = digitalocean.New(transport, formats)
 	cli.Eks = eks.New(transport, formats)
+	cli.Equinixmetal = equinixmetal.New(transport, formats)
 	cli.Etcdbackupconfig = etcdbackupconfig.New(transport, formats)
 	cli.Etcdrestore = etcdrestore.New(transport, formats)
 	cli.Gcp = gcp.New(transport, formats)
@@ -232,9 +236,13 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Datacenter datacenter.ClientService
 
+	DefaultCluster default_cluster.ClientService
+
 	Digitalocean digitalocean.ClientService
 
 	Eks eks.ClientService
+
+	Equinixmetal equinixmetal.ClientService
 
 	Etcdbackupconfig etcdbackupconfig.ClientService
 
@@ -321,8 +329,10 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Constrainttemplates.SetTransport(transport)
 	c.Credentials.SetTransport(transport)
 	c.Datacenter.SetTransport(transport)
+	c.DefaultCluster.SetTransport(transport)
 	c.Digitalocean.SetTransport(transport)
 	c.Eks.SetTransport(transport)
+	c.Equinixmetal.SetTransport(transport)
 	c.Etcdbackupconfig.SetTransport(transport)
 	c.Etcdrestore.SetTransport(transport)
 	c.Gcp.SetTransport(transport)

@@ -22,6 +22,10 @@ type DatacenterSpec struct {
 	// It is used for informational purposes.
 	Country string `json:"country,omitempty"`
 
+	// Optional: DisableCSIDriver disables the installation of CSI driver on every clusters within the DC
+	// If true it can't be over-written in the cluster configuration
+	DisableCSIDriver bool `json:"disableCsiDriver,omitempty"`
+
 	// EnforceAuditLogging enforces audit logging on every cluster within the DC,
 	// ignoring cluster-specific settings.
 	EnforceAuditLogging bool `json:"enforceAuditLogging,omitempty"`
@@ -74,8 +78,14 @@ type DatacenterSpec struct {
 	// hetzner
 	Hetzner *DatacenterSpecHetzner `json:"hetzner,omitempty"`
 
+	// kubelb
+	Kubelb *KubeLBDatacenterSettings `json:"kubelb,omitempty"`
+
 	// kubevirt
 	Kubevirt *DatacenterSpecKubevirt `json:"kubevirt,omitempty"`
+
+	// machine flavor filter
+	MachineFlavorFilter *MachineFlavorFilter `json:"machineFlavorFilter,omitempty"`
 
 	// node
 	Node *NodeSettings `json:"node,omitempty"`
@@ -135,7 +145,15 @@ func (m *DatacenterSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateKubelb(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateKubevirt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMachineFlavorFilter(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -325,6 +343,25 @@ func (m *DatacenterSpec) validateHetzner(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *DatacenterSpec) validateKubelb(formats strfmt.Registry) error {
+	if swag.IsZero(m.Kubelb) { // not required
+		return nil
+	}
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpec) validateKubevirt(formats strfmt.Registry) error {
 	if swag.IsZero(m.Kubevirt) { // not required
 		return nil
@@ -336,6 +373,25 @@ func (m *DatacenterSpec) validateKubevirt(formats strfmt.Registry) error {
 				return ve.ValidateName("kubevirt")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kubevirt")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpec) validateMachineFlavorFilter(formats strfmt.Registry) error {
+	if swag.IsZero(m.MachineFlavorFilter) { // not required
+		return nil
+	}
+
+	if m.MachineFlavorFilter != nil {
+		if err := m.MachineFlavorFilter.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineFlavorFilter")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineFlavorFilter")
 			}
 			return err
 		}
@@ -513,7 +569,15 @@ func (m *DatacenterSpec) ContextValidate(ctx context.Context, formats strfmt.Reg
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateKubelb(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateKubevirt(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMachineFlavorFilter(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -679,6 +743,22 @@ func (m *DatacenterSpec) contextValidateHetzner(ctx context.Context, formats str
 	return nil
 }
 
+func (m *DatacenterSpec) contextValidateKubelb(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpec) contextValidateKubevirt(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Kubevirt != nil {
@@ -687,6 +767,22 @@ func (m *DatacenterSpec) contextValidateKubevirt(ctx context.Context, formats st
 				return ve.ValidateName("kubevirt")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kubevirt")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpec) contextValidateMachineFlavorFilter(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MachineFlavorFilter != nil {
+		if err := m.MachineFlavorFilter.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineFlavorFilter")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineFlavorFilter")
 			}
 			return err
 		}

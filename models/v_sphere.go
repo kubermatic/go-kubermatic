@@ -17,29 +17,38 @@ import (
 // swagger:model VSphere
 type VSphere struct {
 
+	// BasePath configures a vCenter folder path that KKP will create an individual cluster folder in.
+	// If it's an absolute path, the RootPath configured in the datacenter will be ignored. If it is a relative path,
+	// the BasePath part will be appended to the RootPath to construct the full path. For both cases,
+	// the full folder structure needs to exist. KKP will only try to create the cluster folder.
+	BasePath string `json:"basePath,omitempty"`
+
 	// If datacenter is set, this preset is only applicable to the
 	// configured datacenter.
 	Datacenter string `json:"datacenter,omitempty"`
 
-	// datastore
+	// Datastore to be used for storing virtual machines and as a default for dynamic volume provisioning, it is mutually exclusive with DatastoreCluster.
 	Datastore string `json:"datastore,omitempty"`
 
-	// datastore cluster
+	// DatastoreCluster to be used for storing virtual machines, it is mutually exclusive with Datastore.
 	DatastoreCluster string `json:"datastoreCluster,omitempty"`
 
 	// Only enabled presets will be available in the KKP dashboard.
 	Enabled bool `json:"enabled,omitempty"`
 
-	// password
+	// List of vSphere networks.
+	Networks []string `json:"networks"`
+
+	// The vSphere user password.
 	Password string `json:"password,omitempty"`
 
-	// resource pool
+	// ResourcePool is used to manage resources such as cpu and memory for vSphere virtual machines. The resource pool should be defined on vSphere cluster level.
 	ResourcePool string `json:"resourcePool,omitempty"`
 
-	// username
+	// The vSphere user name.
 	Username string `json:"username,omitempty"`
 
-	// VM net name
+	// Deprecated: Use networks instead.
 	VMNetName string `json:"vmNetName,omitempty"`
 }
 
