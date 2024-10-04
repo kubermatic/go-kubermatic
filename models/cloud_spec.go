@@ -39,11 +39,17 @@ type CloudSpec struct {
 	// azure
 	Azure *AzureCloudSpec `json:"azure,omitempty"`
 
+	// baremetal
+	Baremetal *BaremetalCloudSpec `json:"baremetal,omitempty"`
+
 	// bringyourown
 	Bringyourown BringYourOwnCloudSpec `json:"bringyourown,omitempty"`
 
 	// digitalocean
 	Digitalocean *DigitaloceanCloudSpec `json:"digitalocean,omitempty"`
+
+	// edge
+	Edge EdgeCloudSpec `json:"edge,omitempty"`
 
 	// fake
 	Fake *FakeCloudSpec `json:"fake,omitempty"`
@@ -90,6 +96,10 @@ func (m *CloudSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateAzure(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateBaremetal(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -207,6 +217,25 @@ func (m *CloudSpec) validateAzure(formats strfmt.Registry) error {
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CloudSpec) validateBaremetal(formats strfmt.Registry) error {
+	if swag.IsZero(m.Baremetal) { // not required
+		return nil
+	}
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
 			}
 			return err
 		}
@@ -425,6 +454,10 @@ func (m *CloudSpec) ContextValidate(ctx context.Context, formats strfmt.Registry
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBaremetal(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDigitalocean(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -527,6 +560,22 @@ func (m *CloudSpec) contextValidateAzure(ctx context.Context, formats strfmt.Reg
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CloudSpec) contextValidateBaremetal(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
 			}
 			return err
 		}

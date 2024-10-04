@@ -30,8 +30,14 @@ type NodeCloudSpec struct {
 	// azure
 	Azure *AzureNodeSpec `json:"azure,omitempty"`
 
+	// baremetal
+	Baremetal *BaremetalNodeSpec `json:"baremetal,omitempty"`
+
 	// digitalocean
 	Digitalocean *DigitaloceanNodeSpec `json:"digitalocean,omitempty"`
+
+	// edge
+	Edge EdgeNodeSpec `json:"edge,omitempty"`
 
 	// gcp
 	Gcp *GCPNodeSpec `json:"gcp,omitempty"`
@@ -44,6 +50,9 @@ type NodeCloudSpec struct {
 
 	// nutanix
 	Nutanix *NutanixNodeSpec `json:"nutanix,omitempty"`
+
+	// opennebula
+	Opennebula *OpenNebulaNodeSpec `json:"opennebula,omitempty"`
 
 	// openstack
 	Openstack *OpenstackNodeSpec `json:"openstack,omitempty"`
@@ -78,6 +87,10 @@ func (m *NodeCloudSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateBaremetal(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateDigitalocean(formats); err != nil {
 		res = append(res, err)
 	}
@@ -95,6 +108,10 @@ func (m *NodeCloudSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateNutanix(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOpennebula(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -196,6 +213,25 @@ func (m *NodeCloudSpec) validateAzure(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *NodeCloudSpec) validateBaremetal(formats strfmt.Registry) error {
+	if swag.IsZero(m.Baremetal) { // not required
+		return nil
+	}
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *NodeCloudSpec) validateDigitalocean(formats strfmt.Registry) error {
 	if swag.IsZero(m.Digitalocean) { // not required
 		return nil
@@ -283,6 +319,25 @@ func (m *NodeCloudSpec) validateNutanix(formats strfmt.Registry) error {
 				return ve.ValidateName("nutanix")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("nutanix")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *NodeCloudSpec) validateOpennebula(formats strfmt.Registry) error {
+	if swag.IsZero(m.Opennebula) { // not required
+		return nil
+	}
+
+	if m.Opennebula != nil {
+		if err := m.Opennebula.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("opennebula")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("opennebula")
 			}
 			return err
 		}
@@ -387,6 +442,10 @@ func (m *NodeCloudSpec) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBaremetal(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDigitalocean(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -404,6 +463,10 @@ func (m *NodeCloudSpec) ContextValidate(ctx context.Context, formats strfmt.Regi
 	}
 
 	if err := m.contextValidateNutanix(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateOpennebula(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -493,6 +556,22 @@ func (m *NodeCloudSpec) contextValidateAzure(ctx context.Context, formats strfmt
 	return nil
 }
 
+func (m *NodeCloudSpec) contextValidateBaremetal(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *NodeCloudSpec) contextValidateDigitalocean(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Digitalocean != nil {
@@ -565,6 +644,22 @@ func (m *NodeCloudSpec) contextValidateNutanix(ctx context.Context, formats strf
 				return ve.ValidateName("nutanix")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("nutanix")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *NodeCloudSpec) contextValidateOpennebula(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Opennebula != nil {
+		if err := m.Opennebula.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("opennebula")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("opennebula")
 			}
 			return err
 		}

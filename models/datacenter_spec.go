@@ -22,6 +22,10 @@ type DatacenterSpec struct {
 	// It is used for informational purposes.
 	Country string `json:"country,omitempty"`
 
+	// Optional: DisableCSIDriver disables the installation of CSI driver on every clusters within the DC
+	// If true it can't be over-written in the cluster configuration
+	DisableCSIDriver bool `json:"disableCsiDriver,omitempty"`
+
 	// EnforceAuditLogging enforces audit logging on every cluster within the DC,
 	// ignoring cluster-specific settings.
 	EnforceAuditLogging bool `json:"enforceAuditLogging,omitempty"`
@@ -59,11 +63,17 @@ type DatacenterSpec struct {
 	// azure
 	Azure *DatacenterSpecAzure `json:"azure,omitempty"`
 
+	// baremetal
+	Baremetal *DatacenterSpecBaremetal `json:"baremetal,omitempty"`
+
 	// bringyourown
 	Bringyourown DatacenterSpecBringYourOwn `json:"bringyourown,omitempty"`
 
 	// digitalocean
 	Digitalocean *DatacenterSpecDigitalocean `json:"digitalocean,omitempty"`
+
+	// enforced audit webhook settings
+	EnforcedAuditWebhookSettings *AuditWebhookBackendSettings `json:"enforcedAuditWebhookSettings,omitempty"`
 
 	// fake
 	Fake *DatacenterSpecFake `json:"fake,omitempty"`
@@ -74,8 +84,14 @@ type DatacenterSpec struct {
 	// hetzner
 	Hetzner *DatacenterSpecHetzner `json:"hetzner,omitempty"`
 
+	// kubelb
+	Kubelb *KubeLBDatacenterSettings `json:"kubelb,omitempty"`
+
 	// kubevirt
 	Kubevirt *DatacenterSpecKubevirt `json:"kubevirt,omitempty"`
+
+	// machine flavor filter
+	MachineFlavorFilter *MachineFlavorFilter `json:"machineFlavorFilter,omitempty"`
 
 	// node
 	Node *NodeSettings `json:"node,omitempty"`
@@ -119,7 +135,15 @@ func (m *DatacenterSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateBaremetal(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateDigitalocean(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateEnforcedAuditWebhookSettings(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -135,7 +159,15 @@ func (m *DatacenterSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateKubelb(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateKubevirt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMachineFlavorFilter(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -249,6 +281,25 @@ func (m *DatacenterSpec) validateAzure(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *DatacenterSpec) validateBaremetal(formats strfmt.Registry) error {
+	if swag.IsZero(m.Baremetal) { // not required
+		return nil
+	}
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpec) validateDigitalocean(formats strfmt.Registry) error {
 	if swag.IsZero(m.Digitalocean) { // not required
 		return nil
@@ -260,6 +311,25 @@ func (m *DatacenterSpec) validateDigitalocean(formats strfmt.Registry) error {
 				return ve.ValidateName("digitalocean")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("digitalocean")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpec) validateEnforcedAuditWebhookSettings(formats strfmt.Registry) error {
+	if swag.IsZero(m.EnforcedAuditWebhookSettings) { // not required
+		return nil
+	}
+
+	if m.EnforcedAuditWebhookSettings != nil {
+		if err := m.EnforcedAuditWebhookSettings.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("enforcedAuditWebhookSettings")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("enforcedAuditWebhookSettings")
 			}
 			return err
 		}
@@ -325,6 +395,25 @@ func (m *DatacenterSpec) validateHetzner(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *DatacenterSpec) validateKubelb(formats strfmt.Registry) error {
+	if swag.IsZero(m.Kubelb) { // not required
+		return nil
+	}
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpec) validateKubevirt(formats strfmt.Registry) error {
 	if swag.IsZero(m.Kubevirt) { // not required
 		return nil
@@ -336,6 +425,25 @@ func (m *DatacenterSpec) validateKubevirt(formats strfmt.Registry) error {
 				return ve.ValidateName("kubevirt")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kubevirt")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpec) validateMachineFlavorFilter(formats strfmt.Registry) error {
+	if swag.IsZero(m.MachineFlavorFilter) { // not required
+		return nil
+	}
+
+	if m.MachineFlavorFilter != nil {
+		if err := m.MachineFlavorFilter.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineFlavorFilter")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineFlavorFilter")
 			}
 			return err
 		}
@@ -497,7 +605,15 @@ func (m *DatacenterSpec) ContextValidate(ctx context.Context, formats strfmt.Reg
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBaremetal(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDigitalocean(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateEnforcedAuditWebhookSettings(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -513,7 +629,15 @@ func (m *DatacenterSpec) ContextValidate(ctx context.Context, formats strfmt.Reg
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateKubelb(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateKubevirt(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMachineFlavorFilter(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -615,6 +739,22 @@ func (m *DatacenterSpec) contextValidateAzure(ctx context.Context, formats strfm
 	return nil
 }
 
+func (m *DatacenterSpec) contextValidateBaremetal(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpec) contextValidateDigitalocean(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Digitalocean != nil {
@@ -623,6 +763,22 @@ func (m *DatacenterSpec) contextValidateDigitalocean(ctx context.Context, format
 				return ve.ValidateName("digitalocean")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("digitalocean")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpec) contextValidateEnforcedAuditWebhookSettings(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.EnforcedAuditWebhookSettings != nil {
+		if err := m.EnforcedAuditWebhookSettings.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("enforcedAuditWebhookSettings")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("enforcedAuditWebhookSettings")
 			}
 			return err
 		}
@@ -679,6 +835,22 @@ func (m *DatacenterSpec) contextValidateHetzner(ctx context.Context, formats str
 	return nil
 }
 
+func (m *DatacenterSpec) contextValidateKubelb(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpec) contextValidateKubevirt(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Kubevirt != nil {
@@ -687,6 +859,22 @@ func (m *DatacenterSpec) contextValidateKubevirt(ctx context.Context, formats st
 				return ve.ValidateName("kubevirt")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kubevirt")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpec) contextValidateMachineFlavorFilter(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MachineFlavorFilter != nil {
+		if err := m.MachineFlavorFilter.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineFlavorFilter")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineFlavorFilter")
 			}
 			return err
 		}

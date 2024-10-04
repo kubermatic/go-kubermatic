@@ -18,14 +18,22 @@ import (
 // swagger:model DatacenterSpecOpenstack
 type DatacenterSpecOpenstack struct {
 
-	// auth URL
+	// Authentication URL
 	AuthURL string `json:"authURL,omitempty"`
 
-	// availability zone
+	// Used to configure availability zone.
 	AvailabilityZone string `json:"availabilityZone,omitempty"`
+
+	// Optional: configures enablement of topology support for the Cinder CSI Plugin.
+	// This requires Nova and Cinder to have matching availability zones configured.
+	CSICinderTopologyEnabled bool `json:"csiCinderTopologyEnabled,omitempty"`
 
 	// Used for automatic network creation
 	DNSServers []string `json:"dnsServers"`
+
+	// Optional: enable a configuration drive that will be attached to the instance when it boots.
+	// The instance can mount this drive and read files from it to get information
+	EnableConfigDrive bool `json:"enableConfigDrive,omitempty"`
 
 	// Optional: List of enabled flavors for the given datacenter
 	EnabledFlavors []string `json:"enabledFlavors"`
@@ -39,11 +47,19 @@ type DatacenterSpecOpenstack struct {
 	// Optional
 	IgnoreVolumeAZ bool `json:"ignoreVolumeAZ,omitempty"`
 
+	// Optional: Gets mapped to the "lb-method" setting in the cloud config.
+	// defaults to "ROUND_ROBIN".
+	LoadBalancerMethod string `json:"loadBalancerMethod,omitempty"`
+
+	// Optional: Gets mapped to the "lb-provider" setting in the cloud config.
+	// defaults to ""
+	LoadBalancerProvider string `json:"loadBalancerProvider,omitempty"`
+
 	// Optional: Gets mapped to the "manage-security-groups" setting in the cloud config.
 	// This setting defaults to true.
 	ManageSecurityGroups bool `json:"manageSecurityGroups,omitempty"`
 
-	// region
+	// Authentication region name
 	Region string `json:"region,omitempty"`
 
 	// Optional: Gets mapped to the "trust-device-path" setting in the cloud config.
