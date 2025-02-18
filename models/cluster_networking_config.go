@@ -20,12 +20,16 @@ import (
 type ClusterNetworkingConfig struct {
 
 	// CoreDNSReplicas is the number of desired pods of user cluster coredns deployment.
+	// Deprecated: This field should not be used anymore, use cluster.componentsOverride.coreDNS.replicas
+	// instead. Only one of the two fields can be set at any time.
 	CoreDNSReplicas int32 `json:"coreDNSReplicas,omitempty"`
 
 	// Domain name for services.
 	DNSDomain string `json:"dnsDomain,omitempty"`
 
-	// KonnectivityEnabled enables konnectivity for controlplane to node network communication.
+	// Deprecated: KonnectivityEnabled enables konnectivity for controlplane to node network communication.
+	// Konnectivity is the only supported choice for controlplane to node network communication. This field is
+	// defaulted to true and setting it to false is rejected. It will be removed in a future release.
 	KonnectivityEnabled bool `json:"konnectivityEnabled,omitempty"`
 
 	// NodeCIDRMaskSizeIPv4 is the mask size used to address the nodes within provided IPv4 Pods CIDR.
@@ -45,6 +49,9 @@ type ClusterNetworkingConfig struct {
 	// ProxyMode defines the kube-proxy mode ("ipvs" / "iptables" / "ebpf").
 	// Defaults to "ipvs". "ebpf" disables kube-proxy and requires CNI support.
 	ProxyMode string `json:"proxyMode,omitempty"`
+
+	// TunnelingAgentIP is the address used by the tunneling agents
+	TunnelingAgentIP string `json:"tunnelingAgentIP,omitempty"`
 
 	// ip family
 	IPFamily IPFamily `json:"ipFamily,omitempty"`

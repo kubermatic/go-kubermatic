@@ -17,13 +17,17 @@ import (
 // swagger:model AWS
 type AWS struct {
 
-	// Access Key ID to authenticate against AWS.
+	// The Access key ID used to authenticate against AWS.
 	AccessKeyID string `json:"accessKeyID,omitempty"`
 
-	// assume role a r n
+	// Defines the ARN for an IAM role that should be assumed when handling resources on AWS. It will be used
+	// to acquire temporary security credentials using an STS AssumeRole API operation whenever creating an AWS session.
+	// +optional
 	AssumeRoleARN string `json:"assumeRoleARN,omitempty"`
 
-	// assume role external ID
+	// An arbitrary string that may be needed when calling the STS AssumeRole API operation.
+	// Using an external ID can help to prevent the "confused deputy problem".
+	// +optional
 	AssumeRoleExternalID string `json:"assumeRoleExternalID,omitempty"`
 
 	// ARN to use. This can be configured, but if left empty will be
@@ -41,11 +45,15 @@ type AWS struct {
 	// automatically filled in during reconciliation.
 	InstanceProfileName string `json:"instanceProfileName,omitempty"`
 
+	// IsCustomizable marks a preset as editable on the KKP UI; Customizable presets still have the credentials obscured on the UI, but other fields that are not considered private are displayed during cluster creation. Users can then update those fields, if required.
+	// NOTE: This is only supported for OpenStack Cloud Provider in KKP 2.26. Support for other providers will be added later on.
+	IsCustomizable bool `json:"isCustomizable,omitempty"`
+
 	// Route table to use. This can be configured, but if left empty will be
 	// automatically filled in during reconciliation.
 	RouteTableID string `json:"routeTableID,omitempty"`
 
-	// Secret Access Key to authenticate against AWS.
+	// The Secret Access Key used to authenticate against AWS.
 	SecretAccessKey string `json:"secretAccessKey,omitempty"`
 
 	// Security group to use. This can be configured, but if left empty will be

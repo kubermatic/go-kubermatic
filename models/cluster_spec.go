@@ -25,8 +25,9 @@ type ClusterSpec struct {
 	// ContainerRuntime to use, i.e. Docker or containerd. By default containerd will be used.
 	ContainerRuntime string `json:"containerRuntime,omitempty"`
 
-	// EnableOperatingSystemManager enables OSM which in-turn is responsible for creating and managing worker node configuration.
-	EnableOperatingSystemManager bool `json:"enableOperatingSystemManager,omitempty"`
+	// Optional: DisableCSIDriver disables the installation of CSI driver on the cluster
+	// If this is true at the data center then it can't be over-written in the cluster configuration
+	DisableCSIDriver bool `json:"disableCsiDriver,omitempty"`
 
 	// EnableUserSSHKeyAgent control whether the UserSSHKeyAgent will be deployed in the user cluster or not.
 	// If it was enabled, the agent will be deployed and used to sync the user ssh keys, that the user attach
@@ -63,6 +64,9 @@ type ClusterSpec struct {
 	// audit logging
 	AuditLogging *AuditLoggingSettings `json:"auditLogging,omitempty"`
 
+	// backup config
+	BackupConfig *BackupConfig `json:"backupConfig,omitempty"`
+
 	// cloud
 	Cloud *CloudSpec `json:"cloud,omitempty"`
 
@@ -77,6 +81,9 @@ type ClusterSpec struct {
 
 	// expose strategy
 	ExposeStrategy ExposeStrategy `json:"exposeStrategy,omitempty"`
+
+	// kubelb
+	Kubelb *KubeLB `json:"kubelb,omitempty"`
 
 	// kubernetes dashboard
 	KubernetesDashboard *KubernetesDashboard `json:"kubernetesDashboard,omitempty"`
@@ -116,6 +123,10 @@ func (m *ClusterSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateBackupConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCloud(formats); err != nil {
 		res = append(res, err)
 	}
@@ -133,6 +144,10 @@ func (m *ClusterSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateExposeStrategy(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKubelb(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -234,6 +249,25 @@ func (m *ClusterSpec) validateAuditLogging(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ClusterSpec) validateBackupConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.BackupConfig) { // not required
+		return nil
+	}
+
+	if m.BackupConfig != nil {
+		if err := m.BackupConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("backupConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("backupConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *ClusterSpec) validateCloud(formats strfmt.Registry) error {
 	if swag.IsZero(m.Cloud) { // not required
 		return nil
@@ -322,6 +356,25 @@ func (m *ClusterSpec) validateExposeStrategy(formats strfmt.Registry) error {
 			return ce.ValidateName("exposeStrategy")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *ClusterSpec) validateKubelb(formats strfmt.Registry) error {
+	if swag.IsZero(m.Kubelb) { // not required
+		return nil
+	}
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -474,6 +527,10 @@ func (m *ClusterSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBackupConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCloud(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -491,6 +548,10 @@ func (m *ClusterSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 	}
 
 	if err := m.contextValidateExposeStrategy(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKubelb(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -580,6 +641,22 @@ func (m *ClusterSpec) contextValidateAuditLogging(ctx context.Context, formats s
 	return nil
 }
 
+func (m *ClusterSpec) contextValidateBackupConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.BackupConfig != nil {
+		if err := m.BackupConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("backupConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("backupConfig")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *ClusterSpec) contextValidateCloud(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Cloud != nil {
@@ -653,6 +730,22 @@ func (m *ClusterSpec) contextValidateExposeStrategy(ctx context.Context, formats
 			return ce.ValidateName("exposeStrategy")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *ClusterSpec) contextValidateKubelb(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
 	}
 
 	return nil

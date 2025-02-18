@@ -40,7 +40,11 @@ type ClientService interface {
 
 	BindUserToRoleV2(params *BindUserToRoleV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*BindUserToRoleV2OK, error)
 
+	CalculateProjectResourceQuotaUpdate(params *CalculateProjectResourceQuotaUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CalculateProjectResourceQuotaUpdateOK, error)
+
 	CreateCluster(params *CreateClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterCreated, error)
+
+	CreateClusterBackupStorageLocation(params *CreateClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterBackupStorageLocationCreated, error)
 
 	CreateClusterRole(params *CreateClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterRoleCreated, error)
 
@@ -74,6 +78,8 @@ type ClientService interface {
 
 	DeleteCluster(params *DeleteClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteClusterOK, error)
 
+	DeleteClusterBackupStorageLocation(params *DeleteClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteClusterBackupStorageLocationOK, error)
+
 	DeleteClusterRole(params *DeleteClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteClusterRoleOK, error)
 
 	DeleteClusterServiceAccount(params *DeleteClusterServiceAccountParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteClusterServiceAccountOK, error)
@@ -98,8 +104,6 @@ type ClientService interface {
 
 	DeleteNodeDeployment(params *DeleteNodeDeploymentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteNodeDeploymentOK, error)
 
-	DeleteNodeForClusterLegacy(params *DeleteNodeForClusterLegacyParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteNodeForClusterLegacyOK, error)
-
 	DeleteProject(params *DeleteProjectParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectOK, error)
 
 	DeleteRole(params *DeleteRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRoleOK, error)
@@ -117,6 +121,8 @@ type ClientService interface {
 	GetBackupDestinationNames(params *GetBackupDestinationNamesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetBackupDestinationNamesOK, error)
 
 	GetCluster(params *GetClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterOK, error)
+
+	GetClusterBackupStorageLocation(params *GetClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterBackupStorageLocationOK, error)
 
 	GetClusterEvents(params *GetClusterEventsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterEventsOK, error)
 
@@ -139,6 +145,8 @@ type ClientService interface {
 	GetClusterRole(params *GetClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterRoleOK, error)
 
 	GetClusterServiceAccountKubeconfig(params *GetClusterServiceAccountKubeconfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterServiceAccountKubeconfigOK, error)
+
+	GetClusterServiceAccountPermissions(params *GetClusterServiceAccountPermissionsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterServiceAccountPermissionsOK, error)
 
 	GetClusterTemplate(params *GetClusterTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterTemplateOK, error)
 
@@ -170,6 +178,8 @@ type ClientService interface {
 
 	GetMachineDeployment(params *GetMachineDeploymentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetMachineDeploymentOK, error)
 
+	GetMachineDeploymentJoinScript(params *GetMachineDeploymentJoinScriptParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetMachineDeploymentJoinScriptOK, error)
+
 	GetNodeDeployment(params *GetNodeDeploymentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetNodeDeploymentOK, error)
 
 	GetOidcClusterKubeconfig(params *GetOidcClusterKubeconfigParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetOidcClusterKubeconfigOK, error)
@@ -188,9 +198,11 @@ type ClientService interface {
 
 	ListCNIPluginVersionsForCluster(params *ListCNIPluginVersionsForClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListCNIPluginVersionsForClusterOK, error)
 
-	ListClusterRole(params *ListClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterRoleOK, error)
+	ListClusterBackupStorageLocation(params *ListClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterBackupStorageLocationOK, error)
 
-	ListClusterRoleBinding(params *ListClusterRoleBindingParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterRoleBindingOK, error)
+	ListClusterBackupStorageLocationBucketObjects(params *ListClusterBackupStorageLocationBucketObjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterBackupStorageLocationBucketObjectsOK, error)
+
+	ListClusterRole(params *ListClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterRoleOK, error)
 
 	ListClusterRoleBindingV2(params *ListClusterRoleBindingV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterRoleBindingV2OK, error)
 
@@ -252,6 +264,16 @@ type ClientService interface {
 
 	ListNodesForCluster(params *ListNodesForClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListNodesForClusterOK, error)
 
+	ListProjectAWSSecurityGroups(params *ListProjectAWSSecurityGroupsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSSecurityGroupsOK, error)
+
+	ListProjectAWSSizes(params *ListProjectAWSSizesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSSizesOK, error)
+
+	ListProjectAWSSubnets(params *ListProjectAWSSubnetsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSSubnetsOK, error)
+
+	ListProjectAWSVPCs(params *ListProjectAWSVPCsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSVPCsOK, error)
+
+	ListProjectGCPDiskTypes(params *ListProjectGCPDiskTypesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectGCPDiskTypesOK, error)
+
 	ListProjects(params *ListProjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectsOK, error)
 
 	ListRole(params *ListRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListRoleOK, error)
@@ -274,6 +296,8 @@ type ClientService interface {
 
 	PatchCluster(params *PatchClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchClusterOK, error)
 
+	PatchClusterBackupStorageLocation(params *PatchClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchClusterBackupStorageLocationOK, error)
+
 	PatchClusterRole(params *PatchClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchClusterRoleOK, error)
 
 	PatchClusterV2(params *PatchClusterV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchClusterV2OK, error)
@@ -294,6 +318,8 @@ type ClientService interface {
 
 	PatchRole(params *PatchRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchRoleOK, error)
 
+	PostBackupDownloadURL(params *PostBackupDownloadURLParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostBackupDownloadURLCreated, error)
+
 	ResetAlertmanager(params *ResetAlertmanagerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ResetAlertmanagerOK, error)
 
 	RestartMachineDeployment(params *RestartMachineDeploymentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RestartMachineDeploymentOK, error)
@@ -306,8 +332,6 @@ type ClientService interface {
 
 	RevokeClusterViewerTokenV2(params *RevokeClusterViewerTokenV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*RevokeClusterViewerTokenV2OK, error)
 
-	UnbindUserFromClusterRoleBinding(params *UnbindUserFromClusterRoleBindingParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnbindUserFromClusterRoleBindingOK, error)
-
 	UnbindUserFromClusterRoleBindingV2(params *UnbindUserFromClusterRoleBindingV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnbindUserFromClusterRoleBindingV2OK, error)
 
 	UnbindUserFromRoleBinding(params *UnbindUserFromRoleBindingParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnbindUserFromRoleBindingOK, error)
@@ -315,6 +339,8 @@ type ClientService interface {
 	UnbindUserFromRoleBindingV2(params *UnbindUserFromRoleBindingV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnbindUserFromRoleBindingV2OK, error)
 
 	UpdateAlertmanager(params *UpdateAlertmanagerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateAlertmanagerOK, error)
+
+	UpdateClusterTemplate(params *UpdateClusterTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterTemplateCreated, error)
 
 	UpdateExternalCluster(params *UpdateExternalClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateExternalClusterOK, error)
 
@@ -556,6 +582,44 @@ func (a *Client) BindUserToRoleV2(params *BindUserToRoleV2Params, authInfo runti
 }
 
 /*
+CalculateProjectResourceQuotaUpdate calculates the projects resource quota updated by the given resources
+*/
+func (a *Client) CalculateProjectResourceQuotaUpdate(params *CalculateProjectResourceQuotaUpdateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CalculateProjectResourceQuotaUpdateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCalculateProjectResourceQuotaUpdateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "calculateProjectResourceQuotaUpdate",
+		Method:             "POST",
+		PathPattern:        "/api/v2/projects/{project_id}/quotacalculation",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &CalculateProjectResourceQuotaUpdateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*CalculateProjectResourceQuotaUpdateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*CalculateProjectResourceQuotaUpdateDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 CreateCluster creates a cluster for the given project
 */
 func (a *Client) CreateCluster(params *CreateClusterParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterCreated, error) {
@@ -590,6 +654,44 @@ func (a *Client) CreateCluster(params *CreateClusterParams, authInfo runtime.Cli
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*CreateClusterDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+CreateClusterBackupStorageLocation Creates a cluster backup storage location that will belong to the given project
+*/
+func (a *Client) CreateClusterBackupStorageLocation(params *CreateClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateClusterBackupStorageLocationCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCreateClusterBackupStorageLocationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "createClusterBackupStorageLocation",
+		Method:             "POST",
+		PathPattern:        "/api/v2/projects/{project_id}/clusterbackupstoragelocation",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &CreateClusterBackupStorageLocationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*CreateClusterBackupStorageLocationCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*CreateClusterBackupStorageLocationDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -1204,6 +1306,44 @@ func (a *Client) DeleteCluster(params *DeleteClusterParams, authInfo runtime.Cli
 }
 
 /*
+DeleteClusterBackupStorageLocation Deletes a cluster backup storage location for a given project based on its name
+*/
+func (a *Client) DeleteClusterBackupStorageLocation(params *DeleteClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteClusterBackupStorageLocationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDeleteClusterBackupStorageLocationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "deleteClusterBackupStorageLocation",
+		Method:             "DELETE",
+		PathPattern:        "/api/v2/projects/{project_id}/clusterbackupstoragelocation/{cbsl_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DeleteClusterBackupStorageLocationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DeleteClusterBackupStorageLocationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DeleteClusterBackupStorageLocationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 DeleteClusterRole Delete the cluster role with the given name
 */
 func (a *Client) DeleteClusterRole(params *DeleteClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteClusterRoleOK, error) {
@@ -1660,46 +1800,6 @@ func (a *Client) DeleteNodeDeployment(params *DeleteNodeDeploymentParams, authIn
 }
 
 /*
-DeleteNodeForClusterLegacy deprecateds deletes the given node that belongs to the cluster
-
-This endpoint is deprecated, please create a Node Deployment instead.
-*/
-func (a *Client) DeleteNodeForClusterLegacy(params *DeleteNodeForClusterLegacyParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteNodeForClusterLegacyOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewDeleteNodeForClusterLegacyParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "deleteNodeForClusterLegacy",
-		Method:             "DELETE",
-		PathPattern:        "/api/v1/projects/{project_id}/dc/{dc}/clusters/{cluster_id}/nodes/{node_id}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &DeleteNodeForClusterLegacyReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*DeleteNodeForClusterLegacyOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*DeleteNodeForClusterLegacyDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 DeleteProject deletes the project with the given ID
 */
 func (a *Client) DeleteProject(params *DeleteProjectParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectOK, error) {
@@ -2038,6 +2138,44 @@ func (a *Client) GetCluster(params *GetClusterParams, authInfo runtime.ClientAut
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetClusterDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetClusterBackupStorageLocation Gets a cluster backup storage location for a given project based on its name
+*/
+func (a *Client) GetClusterBackupStorageLocation(params *GetClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterBackupStorageLocationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetClusterBackupStorageLocationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getClusterBackupStorageLocation",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/clusterbackupstoragelocation/{cbsl_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetClusterBackupStorageLocationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetClusterBackupStorageLocationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetClusterBackupStorageLocationDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -2456,6 +2594,44 @@ func (a *Client) GetClusterServiceAccountKubeconfig(params *GetClusterServiceAcc
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetClusterServiceAccountKubeconfigDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetClusterServiceAccountPermissions get Service Account permissions
+*/
+func (a *Client) GetClusterServiceAccountPermissions(params *GetClusterServiceAccountPermissionsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetClusterServiceAccountPermissionsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetClusterServiceAccountPermissionsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getClusterServiceAccountPermissions",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/clusters/{cluster_id}/serviceaccount/{namespace}/{service_account_id}/permissions",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetClusterServiceAccountPermissionsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetClusterServiceAccountPermissionsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetClusterServiceAccountPermissionsDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -3030,6 +3206,44 @@ func (a *Client) GetMachineDeployment(params *GetMachineDeploymentParams, authIn
 }
 
 /*
+GetMachineDeploymentJoinScript gets a machine deployment joining script for the edge provider
+*/
+func (a *Client) GetMachineDeploymentJoinScript(params *GetMachineDeploymentJoinScriptParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetMachineDeploymentJoinScriptOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetMachineDeploymentJoinScriptParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getMachineDeploymentJoinScript",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/clusters/{cluster_id}/machinedeployments/{machinedeployment_id}/joiningscript",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetMachineDeploymentJoinScriptReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetMachineDeploymentJoinScriptOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetMachineDeploymentJoinScriptDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 GetNodeDeployment gets a node deployment that is assigned to the given cluster
 */
 func (a *Client) GetNodeDeployment(params *GetNodeDeploymentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetNodeDeploymentOK, error) {
@@ -3372,6 +3586,82 @@ func (a *Client) ListCNIPluginVersionsForCluster(params *ListCNIPluginVersionsFo
 }
 
 /*
+ListClusterBackupStorageLocation List cluster backup storage location for a given project
+*/
+func (a *Client) ListClusterBackupStorageLocation(params *ListClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterBackupStorageLocationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListClusterBackupStorageLocationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listClusterBackupStorageLocation",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/clusterbackupstoragelocation",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListClusterBackupStorageLocationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListClusterBackupStorageLocationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListClusterBackupStorageLocationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListClusterBackupStorageLocationBucketObjects List objects from bucket of a cluster backup storage location for a given project based on its name
+*/
+func (a *Client) ListClusterBackupStorageLocationBucketObjects(params *ListClusterBackupStorageLocationBucketObjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterBackupStorageLocationBucketObjectsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListClusterBackupStorageLocationBucketObjectsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listClusterBackupStorageLocationBucketObjects",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/clusterbackupstoragelocation/{cbsl_name}/bucketobjects",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListClusterBackupStorageLocationBucketObjectsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListClusterBackupStorageLocationBucketObjectsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListClusterBackupStorageLocationBucketObjectsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 ListClusterRole Lists all ClusterRoles
 */
 func (a *Client) ListClusterRole(params *ListClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterRoleOK, error) {
@@ -3406,44 +3696,6 @@ func (a *Client) ListClusterRole(params *ListClusterRoleParams, authInfo runtime
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListClusterRoleDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
-ListClusterRoleBinding List cluster role binding
-*/
-func (a *Client) ListClusterRoleBinding(params *ListClusterRoleBindingParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListClusterRoleBindingOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewListClusterRoleBindingParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "listClusterRoleBinding",
-		Method:             "GET",
-		PathPattern:        "/api/v1/projects/{project_id}/dc/{dc}/clusters/{cluster_id}/clusterbindings",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &ListClusterRoleBindingReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*ListClusterRoleBindingOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*ListClusterRoleBindingDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -4592,6 +4844,196 @@ func (a *Client) ListNodesForCluster(params *ListNodesForClusterParams, authInfo
 }
 
 /*
+ListProjectAWSSecurityGroups Lists available AWS security groups
+*/
+func (a *Client) ListProjectAWSSecurityGroups(params *ListProjectAWSSecurityGroupsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSSecurityGroupsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectAWSSecurityGroupsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectAWSSecurityGroups",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/aws/{dc}/securitygroups",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectAWSSecurityGroupsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectAWSSecurityGroupsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectAWSSecurityGroupsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListProjectAWSSizes Lists available AWS sizes
+*/
+func (a *Client) ListProjectAWSSizes(params *ListProjectAWSSizesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSSizesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectAWSSizesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectAWSSizes",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/aws/sizes",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectAWSSizesReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectAWSSizesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectAWSSizesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListProjectAWSSubnets Lists available AWS subnets
+*/
+func (a *Client) ListProjectAWSSubnets(params *ListProjectAWSSubnetsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSSubnetsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectAWSSubnetsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectAWSSubnets",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/aws/{dc}/subnets",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectAWSSubnetsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectAWSSubnetsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectAWSSubnetsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListProjectAWSVPCs Lists available AWS VPCs
+*/
+func (a *Client) ListProjectAWSVPCs(params *ListProjectAWSVPCsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectAWSVPCsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectAWSVPCsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectAWSVPCs",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/aws/{dc}/vpcs",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectAWSVPCsReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectAWSVPCsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectAWSVPCsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListProjectGCPDiskTypes List disktypes for a given project
+*/
+func (a *Client) ListProjectGCPDiskTypes(params *ListProjectGCPDiskTypesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectGCPDiskTypesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListProjectGCPDiskTypesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listProjectGCPDiskTypes",
+		Method:             "GET",
+		PathPattern:        "/api/v2/projects/{project_id}/providers/gcp/disktypes",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListProjectGCPDiskTypesReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListProjectGCPDiskTypesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListProjectGCPDiskTypesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 ListProjects lists projects that an authenticated user is a member of
 */
 func (a *Client) ListProjects(params *ListProjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListProjectsOK, error) {
@@ -5016,6 +5458,44 @@ func (a *Client) PatchCluster(params *PatchClusterParams, authInfo runtime.Clien
 }
 
 /*
+PatchClusterBackupStorageLocation Patches a cluster backup storage location for a given project based on its name
+*/
+func (a *Client) PatchClusterBackupStorageLocation(params *PatchClusterBackupStorageLocationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchClusterBackupStorageLocationOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPatchClusterBackupStorageLocationParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "patchClusterBackupStorageLocation",
+		Method:             "PATCH",
+		PathPattern:        "/api/v2/projects/{project_id}/clusterbackupstoragelocation/{cbsl_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &PatchClusterBackupStorageLocationReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*PatchClusterBackupStorageLocationOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*PatchClusterBackupStorageLocationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 PatchClusterRole Patch the cluster role with the given name
 */
 func (a *Client) PatchClusterRole(params *PatchClusterRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchClusterRoleOK, error) {
@@ -5400,6 +5880,44 @@ func (a *Client) PatchRole(params *PatchRoleParams, authInfo runtime.ClientAuthI
 }
 
 /*
+PostBackupDownloadURL Creates and get download url for a backup that belong to the given cluster
+*/
+func (a *Client) PostBackupDownloadURL(params *PostBackupDownloadURLParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostBackupDownloadURLCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPostBackupDownloadURLParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "postBackupDownloadUrl",
+		Method:             "POST",
+		PathPattern:        "/api/v2/projects/{project_id}/clusters/{cluster_id}/clusterbackup/{cluster_backup}/downloadurl",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &PostBackupDownloadURLReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*PostBackupDownloadURLCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*PostBackupDownloadURLDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 ResetAlertmanager resets the alertmanager configuration to default for the specified cluster
 */
 func (a *Client) ResetAlertmanager(params *ResetAlertmanagerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ResetAlertmanagerOK, error) {
@@ -5628,44 +6146,6 @@ func (a *Client) RevokeClusterViewerTokenV2(params *RevokeClusterViewerTokenV2Pa
 }
 
 /*
-UnbindUserFromClusterRoleBinding Unbinds user from cluster role binding
-*/
-func (a *Client) UnbindUserFromClusterRoleBinding(params *UnbindUserFromClusterRoleBindingParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnbindUserFromClusterRoleBindingOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewUnbindUserFromClusterRoleBindingParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "unbindUserFromClusterRoleBinding",
-		Method:             "DELETE",
-		PathPattern:        "/api/v1/projects/{project_id}/dc/{dc}/clusters/{cluster_id}/clusterroles/{role_id}/clusterbindings",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &UnbindUserFromClusterRoleBindingReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*UnbindUserFromClusterRoleBindingOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*UnbindUserFromClusterRoleBindingDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 UnbindUserFromClusterRoleBindingV2 Unbinds user from cluster role binding
 */
 func (a *Client) UnbindUserFromClusterRoleBindingV2(params *UnbindUserFromClusterRoleBindingV2Params, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UnbindUserFromClusterRoleBindingV2OK, error) {
@@ -5814,6 +6294,44 @@ func (a *Client) UpdateAlertmanager(params *UpdateAlertmanagerParams, authInfo r
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*UpdateAlertmanagerDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateClusterTemplate updates a specified cluster templates for the given project
+*/
+func (a *Client) UpdateClusterTemplate(params *UpdateClusterTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateClusterTemplateCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateClusterTemplateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "updateClusterTemplate",
+		Method:             "PUT",
+		PathPattern:        "/api/v2/projects/{project_id}/clustertemplates/{template_id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateClusterTemplateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateClusterTemplateCreated)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateClusterTemplateDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

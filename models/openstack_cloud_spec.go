@@ -18,13 +18,18 @@ import (
 // swagger:model OpenstackCloudSpec
 type OpenstackCloudSpec struct {
 
-	// application credential ID
+	// Application credential ID to authenticate in combination with an application credential secret (which is not the user's password).
 	ApplicationCredentialID string `json:"applicationCredentialID,omitempty"`
 
-	// application credential secret
+	// Application credential secret (which is not the user's password) to authenticate in combination with an application credential ID.
 	ApplicationCredentialSecret string `json:"applicationCredentialSecret,omitempty"`
 
-	// domain
+	// Flag to configure enablement of topology support for the Cinder CSI plugin.
+	// This requires Nova and Cinder to have matching availability zones configured.
+	// +optional
+	CinderTopologyEnabled bool `json:"cinderTopologyEnabled,omitempty"`
+
+	// Domain holds the name of the identity service (keystone) domain.
 	Domain string `json:"domain,omitempty"`
 
 	// Enable the `enable-ingress-hostname` cloud provider option on the Openstack CCM. Can only be used with the
@@ -58,7 +63,7 @@ type OpenstackCloudSpec struct {
 	IngressHostnameSuffix string `json:"ingressHostnameSuffix,omitempty"`
 
 	// Network holds the name of the internal network
-	// When specified, all worker nodes will be attached to this network. If not specified, a network, subnet & router will be created
+	// When specified, all worker nodes will be attached to this network. If not specified, a network, subnet & router will be created.
 	//
 	// Note that the network is internal if the "External" field is set to false
 	Network string `json:"network,omitempty"`
@@ -80,7 +85,8 @@ type OpenstackCloudSpec struct {
 	// router ID
 	RouterID string `json:"routerID,omitempty"`
 
-	// security groups
+	// SecurityGroups is a comma-separated list of group names that shall be used for Machines in the cluster.
+	// If this field is left empty, a single default security group will be created and this field will be filled-in.
 	SecurityGroups string `json:"securityGroups,omitempty"`
 
 	// subnet ID
