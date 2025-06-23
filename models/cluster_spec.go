@@ -25,8 +25,9 @@ type ClusterSpec struct {
 	// ContainerRuntime to use, i.e. Docker or containerd. By default containerd will be used.
 	ContainerRuntime string `json:"containerRuntime,omitempty"`
 
-	// EnableOperatingSystemManager enables OSM which in-turn is responsible for creating and managing worker node configuration.
-	EnableOperatingSystemManager bool `json:"enableOperatingSystemManager,omitempty"`
+	// Optional: DisableCSIDriver disables the installation of CSI driver on the cluster
+	// If this is true at the data center then it can't be over-written in the cluster configuration
+	DisableCSIDriver bool `json:"disableCsiDriver,omitempty"`
 
 	// EnableUserSSHKeyAgent control whether the UserSSHKeyAgent will be deployed in the user cluster or not.
 	// If it was enabled, the agent will be deployed and used to sync the user ssh keys, that the user attach
@@ -63,6 +64,9 @@ type ClusterSpec struct {
 	// audit logging
 	AuditLogging *AuditLoggingSettings `json:"auditLogging,omitempty"`
 
+	// backup config
+	BackupConfig *BackupConfig `json:"backupConfig,omitempty"`
+
 	// cloud
 	Cloud *CloudSpec `json:"cloud,omitempty"`
 
@@ -78,8 +82,14 @@ type ClusterSpec struct {
 	// expose strategy
 	ExposeStrategy ExposeStrategy `json:"exposeStrategy,omitempty"`
 
+	// kubelb
+	Kubelb *KubeLB `json:"kubelb,omitempty"`
+
 	// kubernetes dashboard
 	KubernetesDashboard *KubernetesDashboard `json:"kubernetesDashboard,omitempty"`
+
+	// kyverno
+	Kyverno *KyvernoSettings `json:"kyverno,omitempty"`
 
 	// mla
 	Mla *MLASettings `json:"mla,omitempty"`
@@ -116,6 +126,10 @@ func (m *ClusterSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateBackupConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCloud(formats); err != nil {
 		res = append(res, err)
 	}
@@ -136,7 +150,15 @@ func (m *ClusterSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateKubelb(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateKubernetesDashboard(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKyverno(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -226,6 +248,25 @@ func (m *ClusterSpec) validateAuditLogging(formats strfmt.Registry) error {
 				return ve.ValidateName("auditLogging")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("auditLogging")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterSpec) validateBackupConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.BackupConfig) { // not required
+		return nil
+	}
+
+	if m.BackupConfig != nil {
+		if err := m.BackupConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("backupConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("backupConfig")
 			}
 			return err
 		}
@@ -327,6 +368,25 @@ func (m *ClusterSpec) validateExposeStrategy(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *ClusterSpec) validateKubelb(formats strfmt.Registry) error {
+	if swag.IsZero(m.Kubelb) { // not required
+		return nil
+	}
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *ClusterSpec) validateKubernetesDashboard(formats strfmt.Registry) error {
 	if swag.IsZero(m.KubernetesDashboard) { // not required
 		return nil
@@ -338,6 +398,25 @@ func (m *ClusterSpec) validateKubernetesDashboard(formats strfmt.Registry) error
 				return ve.ValidateName("kubernetesDashboard")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kubernetesDashboard")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterSpec) validateKyverno(formats strfmt.Registry) error {
+	if swag.IsZero(m.Kyverno) { // not required
+		return nil
+	}
+
+	if m.Kyverno != nil {
+		if err := m.Kyverno.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kyverno")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kyverno")
 			}
 			return err
 		}
@@ -474,6 +553,10 @@ func (m *ClusterSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBackupConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCloud(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -494,7 +577,15 @@ func (m *ClusterSpec) ContextValidate(ctx context.Context, formats strfmt.Regist
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateKubelb(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateKubernetesDashboard(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKyverno(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -572,6 +663,22 @@ func (m *ClusterSpec) contextValidateAuditLogging(ctx context.Context, formats s
 				return ve.ValidateName("auditLogging")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("auditLogging")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterSpec) contextValidateBackupConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.BackupConfig != nil {
+		if err := m.BackupConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("backupConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("backupConfig")
 			}
 			return err
 		}
@@ -658,6 +765,22 @@ func (m *ClusterSpec) contextValidateExposeStrategy(ctx context.Context, formats
 	return nil
 }
 
+func (m *ClusterSpec) contextValidateKubelb(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Kubelb != nil {
+		if err := m.Kubelb.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kubelb")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kubelb")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *ClusterSpec) contextValidateKubernetesDashboard(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.KubernetesDashboard != nil {
@@ -666,6 +789,22 @@ func (m *ClusterSpec) contextValidateKubernetesDashboard(ctx context.Context, fo
 				return ve.ValidateName("kubernetesDashboard")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("kubernetesDashboard")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ClusterSpec) contextValidateKyverno(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Kyverno != nil {
+		if err := m.Kyverno.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("kyverno")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("kyverno")
 			}
 			return err
 		}

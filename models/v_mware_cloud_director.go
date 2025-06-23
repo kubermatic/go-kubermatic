@@ -17,6 +17,9 @@ import (
 // swagger:model VMwareCloudDirector
 type VMwareCloudDirector struct {
 
+	// The VMware Cloud Director API token.
+	APIToken string `json:"apiToken,omitempty"`
+
 	// If datacenter is set, this preset is only applicable to the
 	// configured datacenter.
 	Datacenter string `json:"datacenter,omitempty"`
@@ -24,19 +27,27 @@ type VMwareCloudDirector struct {
 	// Only enabled presets will be available in the KKP dashboard.
 	Enabled bool `json:"enabled,omitempty"`
 
-	// o v d c network
+	// IsCustomizable marks a preset as editable on the KKP UI; Customizable presets still have the credentials obscured on the UI, but other fields that are not considered private are displayed during cluster creation. Users can then update those fields, if required.
+	// NOTE: This is only supported for OpenStack Cloud Provider in KKP 2.26. Support for other providers will be added later on.
+	IsCustomizable bool `json:"isCustomizable,omitempty"`
+
+	// The name of organizational virtual data center network that will be associated with the VMs and vApp.
+	// Deprecated: OVDCNetwork has been deprecated starting with KKP 2.25 and will be removed in KKP 2.27+. It is recommended to use OVDCNetworks instead.
 	OVDCNetwork string `json:"ovdcNetwork,omitempty"`
 
-	// organization
+	// OVDCNetworks is the list of organizational virtual data center networks that will be attached to the vApp and can be consumed the VMs.
+	OVDCNetworks []string `json:"ovdcNetworks"`
+
+	// The name of organization to use.
 	Organization string `json:"organization,omitempty"`
 
-	// password
+	// The VMware Cloud Director user password.
 	Password string `json:"password,omitempty"`
 
-	// username
+	// The VMware Cloud Director user name.
 	Username string `json:"username,omitempty"`
 
-	// v d c
+	// The organizational virtual data center.
 	VDC string `json:"vdc,omitempty"`
 }
 

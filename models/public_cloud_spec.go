@@ -28,10 +28,13 @@ type PublicCloudSpec struct {
 	Anexia PublicAnexiaCloudSpec `json:"anexia,omitempty"`
 
 	// aws
-	Aws PublicAWSCloudSpec `json:"aws,omitempty"`
+	Aws *PublicAWSCloudSpec `json:"aws,omitempty"`
 
 	// azure
 	Azure *PublicAzureCloudSpec `json:"azure,omitempty"`
+
+	// baremetal
+	Baremetal PublicBaremetalCloudSpec `json:"baremetal,omitempty"`
 
 	// bringyourown
 	Bringyourown PublicBringYourOwnCloudSpec `json:"bringyourown,omitempty"`
@@ -39,11 +42,14 @@ type PublicCloudSpec struct {
 	// digitalocean
 	Digitalocean PublicDigitaloceanCloudSpec `json:"digitalocean,omitempty"`
 
+	// edge
+	Edge PublicEdgeCloudSpec `json:"edge,omitempty"`
+
 	// fake
 	Fake PublicFakeCloudSpec `json:"fake,omitempty"`
 
 	// gcp
-	Gcp PublicGCPCloudSpec `json:"gcp,omitempty"`
+	Gcp *PublicGCPCloudSpec `json:"gcp,omitempty"`
 
 	// hetzner
 	Hetzner PublicHetznerCloudSpec `json:"hetzner,omitempty"`
@@ -61,7 +67,7 @@ type PublicCloudSpec struct {
 	Packet PublicPacketCloudSpec `json:"packet,omitempty"`
 
 	// vmwareclouddirector
-	Vmwareclouddirector PublicVMwareCloudDirectorCloudSpec `json:"vmwareclouddirector,omitempty"`
+	Vmwareclouddirector *PublicVMwareCloudDirectorCloudSpec `json:"vmwareclouddirector,omitempty"`
 
 	// vsphere
 	Vsphere PublicVSphereCloudSpec `json:"vsphere,omitempty"`
@@ -71,7 +77,15 @@ type PublicCloudSpec struct {
 func (m *PublicCloudSpec) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateAws(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateAzure(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGcp(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -83,9 +97,32 @@ func (m *PublicCloudSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateVmwareclouddirector(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *PublicCloudSpec) validateAws(formats strfmt.Registry) error {
+	if swag.IsZero(m.Aws) { // not required
+		return nil
+	}
+
+	if m.Aws != nil {
+		if err := m.Aws.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("aws")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("aws")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -100,6 +137,25 @@ func (m *PublicCloudSpec) validateAzure(formats strfmt.Registry) error {
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PublicCloudSpec) validateGcp(formats strfmt.Registry) error {
+	if swag.IsZero(m.Gcp) { // not required
+		return nil
+	}
+
+	if m.Gcp != nil {
+		if err := m.Gcp.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("gcp")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("gcp")
 			}
 			return err
 		}
@@ -146,11 +202,38 @@ func (m *PublicCloudSpec) validateOpenstack(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *PublicCloudSpec) validateVmwareclouddirector(formats strfmt.Registry) error {
+	if swag.IsZero(m.Vmwareclouddirector) { // not required
+		return nil
+	}
+
+	if m.Vmwareclouddirector != nil {
+		if err := m.Vmwareclouddirector.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("vmwareclouddirector")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("vmwareclouddirector")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this public cloud spec based on the context it is used
 func (m *PublicCloudSpec) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateAws(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateAzure(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateGcp(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -162,9 +245,29 @@ func (m *PublicCloudSpec) ContextValidate(ctx context.Context, formats strfmt.Re
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateVmwareclouddirector(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *PublicCloudSpec) contextValidateAws(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Aws != nil {
+		if err := m.Aws.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("aws")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("aws")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -176,6 +279,22 @@ func (m *PublicCloudSpec) contextValidateAzure(ctx context.Context, formats strf
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PublicCloudSpec) contextValidateGcp(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Gcp != nil {
+		if err := m.Gcp.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("gcp")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("gcp")
 			}
 			return err
 		}
@@ -208,6 +327,22 @@ func (m *PublicCloudSpec) contextValidateOpenstack(ctx context.Context, formats 
 				return ve.ValidateName("openstack")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("openstack")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PublicCloudSpec) contextValidateVmwareclouddirector(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Vmwareclouddirector != nil {
+		if err := m.Vmwareclouddirector.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("vmwareclouddirector")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("vmwareclouddirector")
 			}
 			return err
 		}

@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -18,14 +19,22 @@ import (
 // swagger:model DatacenterSpecOpenstack
 type DatacenterSpecOpenstack struct {
 
-	// auth URL
+	// Authentication URL
 	AuthURL string `json:"authURL,omitempty"`
 
-	// availability zone
+	// Used to configure availability zone.
 	AvailabilityZone string `json:"availabilityZone,omitempty"`
+
+	// Optional: configures enablement of topology support for the Cinder CSI Plugin.
+	// This requires Nova and Cinder to have matching availability zones configured.
+	CSICinderTopologyEnabled bool `json:"csiCinderTopologyEnabled,omitempty"`
 
 	// Used for automatic network creation
 	DNSServers []string `json:"dnsServers"`
+
+	// Optional: enable a configuration drive that will be attached to the instance when it boots.
+	// The instance can mount this drive and read files from it to get information
+	EnableConfigDrive bool `json:"enableConfigDrive,omitempty"`
 
 	// Optional: List of enabled flavors for the given datacenter
 	EnabledFlavors []string `json:"enabledFlavors"`
@@ -39,11 +48,22 @@ type DatacenterSpecOpenstack struct {
 	// Optional
 	IgnoreVolumeAZ bool `json:"ignoreVolumeAZ,omitempty"`
 
+	// Optional: List of LoadBalancerClass configurations to be used for the OpenStack cloud provider.
+	LoadBalancerClasses []*LoadBalancerClass `json:"loadBalancerClasses"`
+
+	// Optional: Gets mapped to the "lb-method" setting in the cloud config.
+	// defaults to "ROUND_ROBIN".
+	LoadBalancerMethod string `json:"loadBalancerMethod,omitempty"`
+
+	// Optional: Gets mapped to the "lb-provider" setting in the cloud config.
+	// defaults to ""
+	LoadBalancerProvider string `json:"loadBalancerProvider,omitempty"`
+
 	// Optional: Gets mapped to the "manage-security-groups" setting in the cloud config.
 	// This setting defaults to true.
 	ManageSecurityGroups bool `json:"manageSecurityGroups,omitempty"`
 
-	// region
+	// Authentication region name
 	Region string `json:"region,omitempty"`
 
 	// Optional: Gets mapped to the "trust-device-path" setting in the cloud config.
@@ -58,6 +78,9 @@ type DatacenterSpecOpenstack struct {
 	// images
 	Images ImageList `json:"images,omitempty"`
 
+	// node ports allowed IP range
+	NodePortsAllowedIPRange *NetworkRanges `json:"nodePortsAllowedIPRange,omitempty"`
+
 	// node size requirements
 	NodeSizeRequirements *OpenstackNodeSizeRequirements `json:"nodeSizeRequirements,omitempty"`
 }
@@ -66,7 +89,15 @@ type DatacenterSpecOpenstack struct {
 func (m *DatacenterSpecOpenstack) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateLoadBalancerClasses(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateImages(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNodePortsAllowedIPRange(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -77,6 +108,32 @@ func (m *DatacenterSpecOpenstack) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *DatacenterSpecOpenstack) validateLoadBalancerClasses(formats strfmt.Registry) error {
+	if swag.IsZero(m.LoadBalancerClasses) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.LoadBalancerClasses); i++ {
+		if swag.IsZero(m.LoadBalancerClasses[i]) { // not required
+			continue
+		}
+
+		if m.LoadBalancerClasses[i] != nil {
+			if err := m.LoadBalancerClasses[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("loadBalancerClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("loadBalancerClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 
@@ -91,6 +148,25 @@ func (m *DatacenterSpecOpenstack) validateImages(formats strfmt.Registry) error 
 				return ve.ValidateName("images")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("images")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecOpenstack) validateNodePortsAllowedIPRange(formats strfmt.Registry) error {
+	if swag.IsZero(m.NodePortsAllowedIPRange) { // not required
+		return nil
+	}
+
+	if m.NodePortsAllowedIPRange != nil {
+		if err := m.NodePortsAllowedIPRange.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("nodePortsAllowedIPRange")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("nodePortsAllowedIPRange")
 			}
 			return err
 		}
@@ -122,7 +198,15 @@ func (m *DatacenterSpecOpenstack) validateNodeSizeRequirements(formats strfmt.Re
 func (m *DatacenterSpecOpenstack) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateLoadBalancerClasses(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateImages(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNodePortsAllowedIPRange(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -136,6 +220,26 @@ func (m *DatacenterSpecOpenstack) ContextValidate(ctx context.Context, formats s
 	return nil
 }
 
+func (m *DatacenterSpecOpenstack) contextValidateLoadBalancerClasses(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.LoadBalancerClasses); i++ {
+
+		if m.LoadBalancerClasses[i] != nil {
+			if err := m.LoadBalancerClasses[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("loadBalancerClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("loadBalancerClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *DatacenterSpecOpenstack) contextValidateImages(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Images.ContextValidate(ctx, formats); err != nil {
@@ -145,6 +249,22 @@ func (m *DatacenterSpecOpenstack) contextValidateImages(ctx context.Context, for
 			return ce.ValidateName("images")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecOpenstack) contextValidateNodePortsAllowedIPRange(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.NodePortsAllowedIPRange != nil {
+		if err := m.NodePortsAllowedIPRange.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("nodePortsAllowedIPRange")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("nodePortsAllowedIPRange")
+			}
+			return err
+		}
 	}
 
 	return nil

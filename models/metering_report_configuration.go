@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -18,7 +19,12 @@ import (
 type MeteringReportConfiguration struct {
 
 	// Interval defines the number of days consulted in the metering report.
+	// Ignored when `Monthly` is set to true
 	Interval uint32 `json:"interval,omitempty"`
+
+	// +optional
+	// Monthly creates a report for the previous month.
+	Monthly bool `json:"monthly,omitempty"`
 
 	// Retention defines a number of days after which reports are queued for removal. If not set, reports are kept forever.
 	// Please note that this functionality works only for object storage that supports an object lifecycle management mechanism.
@@ -30,15 +36,67 @@ type MeteringReportConfiguration struct {
 
 	// Types of reports to generate. Available report types are cluster and namespace. By default, all types of reports are generated.
 	Types []string `json:"type"`
+
+	// format
+	Format MeteringReportFormat `json:"format,omitempty"`
 }
 
 // Validate validates this metering report configuration
 func (m *MeteringReportConfiguration) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateFormat(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this metering report configuration based on context it is used
+func (m *MeteringReportConfiguration) validateFormat(formats strfmt.Registry) error {
+	if swag.IsZero(m.Format) { // not required
+		return nil
+	}
+
+	if err := m.Format.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("format")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("format")
+		}
+		return err
+	}
+
+	return nil
+}
+
+// ContextValidate validate this metering report configuration based on the context it is used
 func (m *MeteringReportConfiguration) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateFormat(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *MeteringReportConfiguration) contextValidateFormat(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.Format.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("format")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("format")
+		}
+		return err
+	}
+
 	return nil
 }
 
