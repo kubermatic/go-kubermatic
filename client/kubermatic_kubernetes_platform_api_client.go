@@ -31,7 +31,6 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/default_cluster"
 	"github.com/kubermatic/go-kubermatic/client/digitalocean"
 	"github.com/kubermatic/go-kubermatic/client/eks"
-	"github.com/kubermatic/go-kubermatic/client/equinixmetal"
 	"github.com/kubermatic/go-kubermatic/client/etcdbackupconfig"
 	"github.com/kubermatic/go-kubermatic/client/etcdrestore"
 	"github.com/kubermatic/go-kubermatic/client/gcp"
@@ -48,7 +47,6 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/openstack"
 	"github.com/kubermatic/go-kubermatic/client/operatingsystemprofile"
 	"github.com/kubermatic/go-kubermatic/client/operations"
-	"github.com/kubermatic/go-kubermatic/client/packet"
 	"github.com/kubermatic/go-kubermatic/client/preset"
 	"github.com/kubermatic/go-kubermatic/client/project"
 	"github.com/kubermatic/go-kubermatic/client/resource_quota"
@@ -129,7 +127,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.DefaultCluster = default_cluster.New(transport, formats)
 	cli.Digitalocean = digitalocean.New(transport, formats)
 	cli.Eks = eks.New(transport, formats)
-	cli.Equinixmetal = equinixmetal.New(transport, formats)
 	cli.Etcdbackupconfig = etcdbackupconfig.New(transport, formats)
 	cli.Etcdrestore = etcdrestore.New(transport, formats)
 	cli.Gcp = gcp.New(transport, formats)
@@ -146,7 +143,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Openstack = openstack.New(transport, formats)
 	cli.Operatingsystemprofile = operatingsystemprofile.New(transport, formats)
 	cli.Operations = operations.New(transport, formats)
-	cli.Packet = packet.New(transport, formats)
 	cli.Preset = preset.New(transport, formats)
 	cli.Project = project.New(transport, formats)
 	cli.ResourceQuota = resource_quota.New(transport, formats)
@@ -248,8 +244,6 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Eks eks.ClientService
 
-	Equinixmetal equinixmetal.ClientService
-
 	Etcdbackupconfig etcdbackupconfig.ClientService
 
 	Etcdrestore etcdrestore.ClientService
@@ -281,8 +275,6 @@ type KubermaticKubernetesPlatformAPI struct {
 	Operatingsystemprofile operatingsystemprofile.ClientService
 
 	Operations operations.ClientService
-
-	Packet packet.ClientService
 
 	Preset preset.ClientService
 
@@ -341,7 +333,6 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.DefaultCluster.SetTransport(transport)
 	c.Digitalocean.SetTransport(transport)
 	c.Eks.SetTransport(transport)
-	c.Equinixmetal.SetTransport(transport)
 	c.Etcdbackupconfig.SetTransport(transport)
 	c.Etcdrestore.SetTransport(transport)
 	c.Gcp.SetTransport(transport)
@@ -358,7 +349,6 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Openstack.SetTransport(transport)
 	c.Operatingsystemprofile.SetTransport(transport)
 	c.Operations.SetTransport(transport)
-	c.Packet.SetTransport(transport)
 	c.Preset.SetTransport(transport)
 	c.Project.SetTransport(transport)
 	c.ResourceQuota.SetTransport(transport)
