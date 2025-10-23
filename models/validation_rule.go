@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -17,26 +18,118 @@ import (
 // swagger:model ValidationRule
 type ValidationRule struct {
 
+	// fieldPath represents the field path returned when the validation fails.
+	// It must be a relative JSON path (i.e. with array notation) scoped to the location of this x-kubernetes-validations extension in the schema and refer to an existing field.
+	// e.g. when validation checks if a specific attribute `foo` under a map `testMap`, the fieldPath could be set to `.testMap.foo`
+	// If the validation checks two lists must have unique attributes, the fieldPath could be set to either of the list: e.g. `.testList`
+	// It does not support list numeric index.
+	// It supports child operation to refer to an existing field currently. Refer to [JSONPath support in Kubernetes](https://kubernetes.io/docs/reference/kubectl/jsonpath/) for more info.
+	// Numeric index of array is not supported.
+	// For field name which contains special characters, use `['specialName']` to refer the field name.
+	// e.g. for attribute `foo.34$` appears in a list `testList`, the fieldPath could be set to `.testList['foo.34$']`
+	// +optional
+	FieldPath string `json:"fieldPath,omitempty"`
+
 	// Message represents the message displayed when validation fails. The message is required if the Rule contains
 	// line breaks. The message must not contain line breaks.
 	// If unset, the message is "failed rule: {Rule}".
 	// e.g. "must be a URL with the host matching spec.host"
 	Message string `json:"message,omitempty"`
 
+	// MessageExpression declares a CEL expression that evaluates to the validation failure message that is returned when this rule fails.
+	// Since messageExpression is used as a failure message, it must evaluate to a string.
+	// If both message and messageExpression are present on a rule, then messageExpression will be used if validation
+	// fails. If messageExpression results in a runtime error, the runtime error is logged, and the validation failure message is produced
+	// as if the messageExpression field were unset. If messageExpression evaluates to an empty string, a string with only spaces, or a string
+	// that contains line breaks, then the validation failure message will also be produced as if the messageExpression field were unset, and
+	// the fact that messageExpression produced an empty string/string with only spaces/string with line breaks will be logged.
+	// messageExpression has access to all the same variables as the rule; the only difference is the return type.
+	MessageExpression string `json:"messageExpression,omitempty"`
+
+	// optionalOldSelf is used to opt a transition rule into evaluation
+	// even when the object is first created, or if the old object is
+	// missing the value.
+	//
+	// When enabled `oldSelf` will be a CEL optional whose value will be
+	// `None` if there is no old value, or when the object is initially created.
+	//
+	// You may check for presence of oldSelf using `oldSelf.hasValue()` and
+	// unwrap it after checking using `oldSelf.value()`. Check the CEL
+	// documentation for Optional types for more information:
+	// https://pkg.go.dev/github.com/google/cel-go/cel#OptionalTypes
+	//
+	// May not be set unless `oldSelf` is used in `rule`.
+	//
+	// +featureGate=CRDValidationRatcheting
+	// +optional
+	OptionalOldSelf bool `json:"optionalOldSelf,omitempty"`
+
 	// Rule represents the expression which will be evaluated by CEL.
 	// ref: https://github.com/google/cel-spec
 	// The Rule is scoped to the location of the x-kubernetes-validations extension in the schema.
 	// The `self` variable in the CEL expression is bound to the scoped value.
 	Rule string `json:"rule,omitempty"`
+
+	// reason
+	Reason FieldValueErrorReason `json:"reason,omitempty"`
 }
 
 // Validate validates this validation rule
 func (m *ValidationRule) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateReason(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this validation rule based on context it is used
+func (m *ValidationRule) validateReason(formats strfmt.Registry) error {
+	if swag.IsZero(m.Reason) { // not required
+		return nil
+	}
+
+	if err := m.Reason.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("reason")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("reason")
+		}
+		return err
+	}
+
+	return nil
+}
+
+// ContextValidate validate this validation rule based on the context it is used
 func (m *ValidationRule) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateReason(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *ValidationRule) contextValidateReason(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.Reason.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("reason")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("reason")
+		}
+		return err
+	}
+
 	return nil
 }
 

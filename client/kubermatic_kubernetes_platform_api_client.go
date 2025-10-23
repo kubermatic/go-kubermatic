@@ -21,12 +21,14 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/aws"
 	"github.com/kubermatic/go-kubermatic/client/azure"
 	"github.com/kubermatic/go-kubermatic/client/backupcredentials"
+	"github.com/kubermatic/go-kubermatic/client/backupstoragelocation"
 	"github.com/kubermatic/go-kubermatic/client/cniversion"
 	"github.com/kubermatic/go-kubermatic/client/constraint"
 	"github.com/kubermatic/go-kubermatic/client/constraints"
 	"github.com/kubermatic/go-kubermatic/client/constrainttemplates"
 	"github.com/kubermatic/go-kubermatic/client/credentials"
 	"github.com/kubermatic/go-kubermatic/client/datacenter"
+	"github.com/kubermatic/go-kubermatic/client/default_cluster"
 	"github.com/kubermatic/go-kubermatic/client/digitalocean"
 	"github.com/kubermatic/go-kubermatic/client/eks"
 	"github.com/kubermatic/go-kubermatic/client/etcdbackupconfig"
@@ -45,7 +47,6 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/openstack"
 	"github.com/kubermatic/go-kubermatic/client/operatingsystemprofile"
 	"github.com/kubermatic/go-kubermatic/client/operations"
-	"github.com/kubermatic/go-kubermatic/client/packet"
 	"github.com/kubermatic/go-kubermatic/client/preset"
 	"github.com/kubermatic/go-kubermatic/client/project"
 	"github.com/kubermatic/go-kubermatic/client/resource_quota"
@@ -53,6 +54,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/seed"
 	"github.com/kubermatic/go-kubermatic/client/serviceaccounts"
 	"github.com/kubermatic/go-kubermatic/client/settings"
+	"github.com/kubermatic/go-kubermatic/client/tinkerbell"
 	"github.com/kubermatic/go-kubermatic/client/tokens"
 	"github.com/kubermatic/go-kubermatic/client/user"
 	"github.com/kubermatic/go-kubermatic/client/users"
@@ -115,12 +117,14 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Aws = aws.New(transport, formats)
 	cli.Azure = azure.New(transport, formats)
 	cli.Backupcredentials = backupcredentials.New(transport, formats)
+	cli.Backupstoragelocation = backupstoragelocation.New(transport, formats)
 	cli.Cniversion = cniversion.New(transport, formats)
 	cli.Constraint = constraint.New(transport, formats)
 	cli.Constraints = constraints.New(transport, formats)
 	cli.Constrainttemplates = constrainttemplates.New(transport, formats)
 	cli.Credentials = credentials.New(transport, formats)
 	cli.Datacenter = datacenter.New(transport, formats)
+	cli.DefaultCluster = default_cluster.New(transport, formats)
 	cli.Digitalocean = digitalocean.New(transport, formats)
 	cli.Eks = eks.New(transport, formats)
 	cli.Etcdbackupconfig = etcdbackupconfig.New(transport, formats)
@@ -139,7 +143,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Openstack = openstack.New(transport, formats)
 	cli.Operatingsystemprofile = operatingsystemprofile.New(transport, formats)
 	cli.Operations = operations.New(transport, formats)
-	cli.Packet = packet.New(transport, formats)
 	cli.Preset = preset.New(transport, formats)
 	cli.Project = project.New(transport, formats)
 	cli.ResourceQuota = resource_quota.New(transport, formats)
@@ -147,6 +150,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Seed = seed.New(transport, formats)
 	cli.Serviceaccounts = serviceaccounts.New(transport, formats)
 	cli.Settings = settings.New(transport, formats)
+	cli.Tinkerbell = tinkerbell.New(transport, formats)
 	cli.Tokens = tokens.New(transport, formats)
 	cli.User = user.New(transport, formats)
 	cli.Users = users.New(transport, formats)
@@ -220,6 +224,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Backupcredentials backupcredentials.ClientService
 
+	Backupstoragelocation backupstoragelocation.ClientService
+
 	Cniversion cniversion.ClientService
 
 	Constraint constraint.ClientService
@@ -231,6 +237,8 @@ type KubermaticKubernetesPlatformAPI struct {
 	Credentials credentials.ClientService
 
 	Datacenter datacenter.ClientService
+
+	DefaultCluster default_cluster.ClientService
 
 	Digitalocean digitalocean.ClientService
 
@@ -268,8 +276,6 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	Operations operations.ClientService
 
-	Packet packet.ClientService
-
 	Preset preset.ClientService
 
 	Project project.ClientService
@@ -283,6 +289,8 @@ type KubermaticKubernetesPlatformAPI struct {
 	Serviceaccounts serviceaccounts.ClientService
 
 	Settings settings.ClientService
+
+	Tinkerbell tinkerbell.ClientService
 
 	Tokens tokens.ClientService
 
@@ -315,12 +323,14 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Aws.SetTransport(transport)
 	c.Azure.SetTransport(transport)
 	c.Backupcredentials.SetTransport(transport)
+	c.Backupstoragelocation.SetTransport(transport)
 	c.Cniversion.SetTransport(transport)
 	c.Constraint.SetTransport(transport)
 	c.Constraints.SetTransport(transport)
 	c.Constrainttemplates.SetTransport(transport)
 	c.Credentials.SetTransport(transport)
 	c.Datacenter.SetTransport(transport)
+	c.DefaultCluster.SetTransport(transport)
 	c.Digitalocean.SetTransport(transport)
 	c.Eks.SetTransport(transport)
 	c.Etcdbackupconfig.SetTransport(transport)
@@ -339,7 +349,6 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Openstack.SetTransport(transport)
 	c.Operatingsystemprofile.SetTransport(transport)
 	c.Operations.SetTransport(transport)
-	c.Packet.SetTransport(transport)
 	c.Preset.SetTransport(transport)
 	c.Project.SetTransport(transport)
 	c.ResourceQuota.SetTransport(transport)
@@ -347,6 +356,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Seed.SetTransport(transport)
 	c.Serviceaccounts.SetTransport(transport)
 	c.Settings.SetTransport(transport)
+	c.Tinkerbell.SetTransport(transport)
 	c.Tokens.SetTransport(transport)
 	c.User.SetTransport(transport)
 	c.Users.SetTransport(transport)

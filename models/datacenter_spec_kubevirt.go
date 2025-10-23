@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -18,26 +19,181 @@ import (
 // swagger:model DatacenterSpecKubevirt
 type DatacenterSpecKubevirt struct {
 
+	// Optional: indicates if the ccm should create and manage the clusters load balancers.
+	CCMLoadBalancerEnabled bool `json:"ccmLoadBalancerEnabled,omitempty"`
+
+	// Optional: indicates if region and zone labels from the cloud provider should be fetched.
+	CCMZoneAndRegionEnabled bool `json:"ccmZoneAndRegionEnabled,omitempty"`
+
+	// Optional: CustomNetworkPolicies allows to add some extra custom NetworkPolicies, that are deployed
+	// in the dedicated infra KubeVirt cluster. They are added to the defaults.
+	CustomNetworkPolicies []*CustomNetworkPolicy `json:"customNetworkPolicies"`
+
 	// DNSPolicy represents the dns policy for the pod. Valid values are 'ClusterFirstWithHostNet', 'ClusterFirst',
 	// 'Default' or 'None'. Defaults to "ClusterFirst". DNS parameters given in DNSConfig will be merged with the
 	// policy selected with DNSPolicy.
 	DNSPolicy string `json:"dnsPolicy,omitempty"`
 
+	// DisableDefaultInstanceTypes prevents KKP from automatically creating default instance types.
+	// (standard-2, standard-4, standard-8) in KubeVirt environments.
+	DisableDefaultInstanceTypes bool `json:"disableDefaultInstanceTypes,omitempty"`
+
+	// DisableKubermaticPreferences prevents KKP from setting default KubeVirt preferences.
+	DisableDefaultPreferences bool `json:"disableDefaultPreferences,omitempty"`
+
+	// Optional: EnableDedicatedCPUs enables the assignment of dedicated cpus instead of resource requests and limits for a virtual machine.
+	// Defaults to false.
+	// Deprecated: Use .kubevirt.usePodResourcesCPU instead.
+	EnableDedicatedCPUs bool `json:"enableDedicatedCpus,omitempty"`
+
+	// Optional: EnableDefaultNetworkPolicies enables deployment of default network policies like cluster isolation.
+	// Defaults to true.
+	EnableDefaultNetworkPolicies bool `json:"enableDefaultNetworkPolicies,omitempty"`
+
+	// Optional: InfraStorageClasses contains a list of KubeVirt infra cluster StorageClasses names
+	// that will be used to initialise StorageClasses in the tenant cluster.
+	// In the tenant cluster, the created StorageClass name will have as name:
+	// kubevirt-<infra-storageClass-name>
+	InfraStorageClasses []*KubeVirtInfraStorageClass `json:"infraStorageClasses"`
+
+	// Optional: MatchSubnetAndStorageLocation if set to true, the region and zone of the subnet and storage class must match. For
+	// example, if the storage class has the region `eu` and zone was `central`, the subnet must be in the same region and zone.
+	// otherwise KKP will reject the creation of the machine deployment and eventually the cluster.
+	MatchSubnetAndStorageLocation bool `json:"matchSubnetAndStorageLocation,omitempty"`
+
+	// Optional: UsePodResourcesCPU enables CPU assignment via Kubernetes Pod resource requests/limits.
+	// When false (default), CPUs are assigned via KubeVirt's spec.domain.cpu.
+	UsePodResourcesCPU bool `json:"usePodResourcesCPU,omitempty"`
+
+	// csi driver operator
+	CsiDriverOperator *KubeVirtCSIDriverOperator `json:"csiDriverOperator,omitempty"`
+
 	// dns config
 	DNSConfig *PodDNSConfig `json:"dnsConfig,omitempty"`
+
+	// images
+	Images *KubeVirtImageSources `json:"images,omitempty"`
+
+	// namespaced mode
+	NamespacedMode *NamespacedMode `json:"namespacedMode,omitempty"`
+
+	// provider network
+	ProviderNetwork *ProviderNetwork `json:"providerNetwork,omitempty"`
+
+	// vm eviction strategy
+	VMEvictionStrategy EvictionStrategy `json:"vmEvictionStrategy,omitempty"`
 }
 
 // Validate validates this datacenter spec kubevirt
 func (m *DatacenterSpecKubevirt) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateCustomNetworkPolicies(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateInfraStorageClasses(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCsiDriverOperator(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateDNSConfig(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateImages(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNamespacedMode(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateProviderNetwork(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateVMEvictionStrategy(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) validateCustomNetworkPolicies(formats strfmt.Registry) error {
+	if swag.IsZero(m.CustomNetworkPolicies) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.CustomNetworkPolicies); i++ {
+		if swag.IsZero(m.CustomNetworkPolicies[i]) { // not required
+			continue
+		}
+
+		if m.CustomNetworkPolicies[i] != nil {
+			if err := m.CustomNetworkPolicies[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("customNetworkPolicies" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("customNetworkPolicies" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) validateInfraStorageClasses(formats strfmt.Registry) error {
+	if swag.IsZero(m.InfraStorageClasses) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.InfraStorageClasses); i++ {
+		if swag.IsZero(m.InfraStorageClasses[i]) { // not required
+			continue
+		}
+
+		if m.InfraStorageClasses[i] != nil {
+			if err := m.InfraStorageClasses[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("infraStorageClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("infraStorageClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) validateCsiDriverOperator(formats strfmt.Registry) error {
+	if swag.IsZero(m.CsiDriverOperator) { // not required
+		return nil
+	}
+
+	if m.CsiDriverOperator != nil {
+		if err := m.CsiDriverOperator.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("csiDriverOperator")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("csiDriverOperator")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -60,17 +216,175 @@ func (m *DatacenterSpecKubevirt) validateDNSConfig(formats strfmt.Registry) erro
 	return nil
 }
 
+func (m *DatacenterSpecKubevirt) validateImages(formats strfmt.Registry) error {
+	if swag.IsZero(m.Images) { // not required
+		return nil
+	}
+
+	if m.Images != nil {
+		if err := m.Images.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("images")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("images")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) validateNamespacedMode(formats strfmt.Registry) error {
+	if swag.IsZero(m.NamespacedMode) { // not required
+		return nil
+	}
+
+	if m.NamespacedMode != nil {
+		if err := m.NamespacedMode.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("namespacedMode")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("namespacedMode")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) validateProviderNetwork(formats strfmt.Registry) error {
+	if swag.IsZero(m.ProviderNetwork) { // not required
+		return nil
+	}
+
+	if m.ProviderNetwork != nil {
+		if err := m.ProviderNetwork.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("providerNetwork")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("providerNetwork")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) validateVMEvictionStrategy(formats strfmt.Registry) error {
+	if swag.IsZero(m.VMEvictionStrategy) { // not required
+		return nil
+	}
+
+	if err := m.VMEvictionStrategy.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("vmEvictionStrategy")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("vmEvictionStrategy")
+		}
+		return err
+	}
+
+	return nil
+}
+
 // ContextValidate validate this datacenter spec kubevirt based on the context it is used
 func (m *DatacenterSpecKubevirt) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateCustomNetworkPolicies(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateInfraStorageClasses(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateCsiDriverOperator(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDNSConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateImages(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNamespacedMode(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateProviderNetwork(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateVMEvictionStrategy(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateCustomNetworkPolicies(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.CustomNetworkPolicies); i++ {
+
+		if m.CustomNetworkPolicies[i] != nil {
+			if err := m.CustomNetworkPolicies[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("customNetworkPolicies" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("customNetworkPolicies" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateInfraStorageClasses(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.InfraStorageClasses); i++ {
+
+		if m.InfraStorageClasses[i] != nil {
+			if err := m.InfraStorageClasses[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("infraStorageClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("infraStorageClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateCsiDriverOperator(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.CsiDriverOperator != nil {
+		if err := m.CsiDriverOperator.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("csiDriverOperator")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("csiDriverOperator")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -85,6 +399,68 @@ func (m *DatacenterSpecKubevirt) contextValidateDNSConfig(ctx context.Context, f
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateImages(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Images != nil {
+		if err := m.Images.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("images")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("images")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateNamespacedMode(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.NamespacedMode != nil {
+		if err := m.NamespacedMode.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("namespacedMode")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("namespacedMode")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateProviderNetwork(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ProviderNetwork != nil {
+		if err := m.ProviderNetwork.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("providerNetwork")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("providerNetwork")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *DatacenterSpecKubevirt) contextValidateVMEvictionStrategy(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.VMEvictionStrategy.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("vmEvictionStrategy")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("vmEvictionStrategy")
+		}
+		return err
 	}
 
 	return nil
