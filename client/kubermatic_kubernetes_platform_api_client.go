@@ -57,6 +57,7 @@ import (
 	"github.com/kubermatic/go-kubermatic/client/tinkerbell"
 	"github.com/kubermatic/go-kubermatic/client/tokens"
 	"github.com/kubermatic/go-kubermatic/client/user"
+	"github.com/kubermatic/go-kubermatic/client/user_cluster_config"
 	"github.com/kubermatic/go-kubermatic/client/users"
 	"github.com/kubermatic/go-kubermatic/client/version"
 	"github.com/kubermatic/go-kubermatic/client/versions"
@@ -153,6 +154,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Kubermatic
 	cli.Tinkerbell = tinkerbell.New(transport, formats)
 	cli.Tokens = tokens.New(transport, formats)
 	cli.User = user.New(transport, formats)
+	cli.UserClusterConfig = user_cluster_config.New(transport, formats)
 	cli.Users = users.New(transport, formats)
 	cli.Version = version.New(transport, formats)
 	cli.Versions = versions.New(transport, formats)
@@ -296,6 +298,8 @@ type KubermaticKubernetesPlatformAPI struct {
 
 	User user.ClientService
 
+	UserClusterConfig user_cluster_config.ClientService
+
 	Users users.ClientService
 
 	Version version.ClientService
@@ -359,6 +363,7 @@ func (c *KubermaticKubernetesPlatformAPI) SetTransport(transport runtime.ClientT
 	c.Tinkerbell.SetTransport(transport)
 	c.Tokens.SetTransport(transport)
 	c.User.SetTransport(transport)
+	c.UserClusterConfig.SetTransport(transport)
 	c.Users.SetTransport(transport)
 	c.Version.SetTransport(transport)
 	c.Versions.SetTransport(transport)
