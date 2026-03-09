@@ -21,9 +21,6 @@ type OperatingSystemSpec struct {
 	// amzn2
 	Amzn2 *AmazonLinuxSpec `json:"amzn2,omitempty"`
 
-	// centos
-	Centos *CentOSSpec `json:"centos,omitempty"`
-
 	// flatcar
 	Flatcar *FlatcarSpec `json:"flatcar,omitempty"`
 
@@ -32,9 +29,6 @@ type OperatingSystemSpec struct {
 
 	// rockylinux
 	Rockylinux *RockyLinuxSpec `json:"rockylinux,omitempty"`
-
-	// sles
-	Sles *SLESSpec `json:"sles,omitempty"`
 
 	// ubuntu
 	Ubuntu *UbuntuSpec `json:"ubuntu,omitempty"`
@@ -48,10 +42,6 @@ func (m *OperatingSystemSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateCentos(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateFlatcar(formats); err != nil {
 		res = append(res, err)
 	}
@@ -61,10 +51,6 @@ func (m *OperatingSystemSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRockylinux(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSles(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -89,25 +75,6 @@ func (m *OperatingSystemSpec) validateAmzn2(formats strfmt.Registry) error {
 				return ve.ValidateName("amzn2")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("amzn2")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *OperatingSystemSpec) validateCentos(formats strfmt.Registry) error {
-	if swag.IsZero(m.Centos) { // not required
-		return nil
-	}
-
-	if m.Centos != nil {
-		if err := m.Centos.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("centos")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("centos")
 			}
 			return err
 		}
@@ -173,25 +140,6 @@ func (m *OperatingSystemSpec) validateRockylinux(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *OperatingSystemSpec) validateSles(formats strfmt.Registry) error {
-	if swag.IsZero(m.Sles) { // not required
-		return nil
-	}
-
-	if m.Sles != nil {
-		if err := m.Sles.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("sles")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("sles")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *OperatingSystemSpec) validateUbuntu(formats strfmt.Registry) error {
 	if swag.IsZero(m.Ubuntu) { // not required
 		return nil
@@ -219,10 +167,6 @@ func (m *OperatingSystemSpec) ContextValidate(ctx context.Context, formats strfm
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateCentos(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateFlatcar(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -232,10 +176,6 @@ func (m *OperatingSystemSpec) ContextValidate(ctx context.Context, formats strfm
 	}
 
 	if err := m.contextValidateRockylinux(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateSles(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -257,22 +197,6 @@ func (m *OperatingSystemSpec) contextValidateAmzn2(ctx context.Context, formats 
 				return ve.ValidateName("amzn2")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("amzn2")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *OperatingSystemSpec) contextValidateCentos(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Centos != nil {
-		if err := m.Centos.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("centos")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("centos")
 			}
 			return err
 		}
@@ -321,22 +245,6 @@ func (m *OperatingSystemSpec) contextValidateRockylinux(ctx context.Context, for
 				return ve.ValidateName("rockylinux")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("rockylinux")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *OperatingSystemSpec) contextValidateSles(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Sles != nil {
-		if err := m.Sles.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("sles")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("sles")
 			}
 			return err
 		}

@@ -17,10 +17,10 @@ import (
 // swagger:model Alibaba
 type Alibaba struct {
 
-	// Access Key ID to authenticate against Alibaba.
+	// The Access Key ID used to authenticate against Alibaba.
 	AccessKeyID string `json:"accessKeyID,omitempty"`
 
-	// Access Key Secret to authenticate against Alibaba.
+	// The Access Key Secret used to authenticate against Alibaba.
 	AccessKeySecret string `json:"accessKeySecret,omitempty"`
 
 	// If datacenter is set, this preset is only applicable to the
@@ -29,6 +29,10 @@ type Alibaba struct {
 
 	// Only enabled presets will be available in the KKP dashboard.
 	Enabled bool `json:"enabled,omitempty"`
+
+	// IsCustomizable marks a preset as editable on the KKP UI; Customizable presets still have the credentials obscured on the UI, but other fields that are not considered private are displayed during cluster creation. Users can then update those fields, if required.
+	// NOTE: This is only supported for OpenStack Cloud Provider in KKP 2.26. Support for other providers will be added later on.
+	IsCustomizable bool `json:"isCustomizable,omitempty"`
 }
 
 // Validate validates this alibaba

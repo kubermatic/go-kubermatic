@@ -22,6 +22,10 @@ type KubevirtCloudSpec struct {
 	// c s i kubeconfig
 	CSIKubeconfig string `json:"csiKubeconfig,omitempty"`
 
+	// ImageCloningEnabled flag enable/disable cloning for a cluster.
+	ImageCloningEnabled bool `json:"imageCloningEnabled,omitempty"`
+
+	// Deprecated: in favor of StorageClasses.
 	// InfraStorageClasses is a list of storage classes from KubeVirt infra cluster that are used for
 	// initialization of user cluster storage classes by the CSI driver kubevirt (hot pluggable disks)
 	InfraStorageClasses []string `json:"infraStorageClasses"`
@@ -29,11 +33,28 @@ type KubevirtCloudSpec struct {
 	// The cluster's kubeconfig file, encoded with base64.
 	Kubeconfig string `json:"kubeconfig,omitempty"`
 
-	// PreAllocatedDataVolumes holds list of preallocated DataVolumes which can be used as reference for DataVolume cloning.
+	// Custom Images are a good example of this use case.
 	PreAllocatedDataVolumes []*PreAllocatedDataVolume `json:"preAllocatedDataVolumes"`
+
+	// StorageClasses is a list of storage classes from KubeVirt infra cluster that are used for
+	// initialization of user cluster storage classes by the CSI driver kubevirt (hot pluggable disks.
+	// It contains also some flag specifying which one is the default one.
+	StorageClasses []*KubeVirtInfraStorageClass `json:"storageClasses"`
+
+	// SubnetName is the name of a subnet that is smaller, segmented portion of a larger network, like a Virtual Private Cloud (VPC).
+	SubnetName string `json:"subnetName,omitempty"`
+
+	// VPCName  is a virtual network name dedicated to a single tenant within a KubeVirt.
+	VPCName string `json:"vpcName,omitempty"`
+
+	// VolumeSnapshotClasses defines a list of volume snapshot classes for the infrastructure cluster.
+	VolumeSnapshotClasses []*KubeVirtInfraVolumeSnapshotClass `json:"volumeSnapshotClasses"`
 
 	// credentials reference
 	CredentialsReference *GlobalSecretKeySelector `json:"credentialsReference,omitempty"`
+
+	// csi driver operator
+	CsiDriverOperator *KubeVirtCSIDriverOperator `json:"csiDriverOperator,omitempty"`
 }
 
 // Validate validates this kubevirt cloud spec
@@ -44,7 +65,19 @@ func (m *KubevirtCloudSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateStorageClasses(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateVolumeSnapshotClasses(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCredentialsReference(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCsiDriverOperator(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -80,6 +113,58 @@ func (m *KubevirtCloudSpec) validatePreAllocatedDataVolumes(formats strfmt.Regis
 	return nil
 }
 
+func (m *KubevirtCloudSpec) validateStorageClasses(formats strfmt.Registry) error {
+	if swag.IsZero(m.StorageClasses) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.StorageClasses); i++ {
+		if swag.IsZero(m.StorageClasses[i]) { // not required
+			continue
+		}
+
+		if m.StorageClasses[i] != nil {
+			if err := m.StorageClasses[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("storageClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("storageClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *KubevirtCloudSpec) validateVolumeSnapshotClasses(formats strfmt.Registry) error {
+	if swag.IsZero(m.VolumeSnapshotClasses) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.VolumeSnapshotClasses); i++ {
+		if swag.IsZero(m.VolumeSnapshotClasses[i]) { // not required
+			continue
+		}
+
+		if m.VolumeSnapshotClasses[i] != nil {
+			if err := m.VolumeSnapshotClasses[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("volumeSnapshotClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("volumeSnapshotClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *KubevirtCloudSpec) validateCredentialsReference(formats strfmt.Registry) error {
 	if swag.IsZero(m.CredentialsReference) { // not required
 		return nil
@@ -99,6 +184,25 @@ func (m *KubevirtCloudSpec) validateCredentialsReference(formats strfmt.Registry
 	return nil
 }
 
+func (m *KubevirtCloudSpec) validateCsiDriverOperator(formats strfmt.Registry) error {
+	if swag.IsZero(m.CsiDriverOperator) { // not required
+		return nil
+	}
+
+	if m.CsiDriverOperator != nil {
+		if err := m.CsiDriverOperator.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("csiDriverOperator")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("csiDriverOperator")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this kubevirt cloud spec based on the context it is used
 func (m *KubevirtCloudSpec) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -107,7 +211,19 @@ func (m *KubevirtCloudSpec) ContextValidate(ctx context.Context, formats strfmt.
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateStorageClasses(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateVolumeSnapshotClasses(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCredentialsReference(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateCsiDriverOperator(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -137,6 +253,46 @@ func (m *KubevirtCloudSpec) contextValidatePreAllocatedDataVolumes(ctx context.C
 	return nil
 }
 
+func (m *KubevirtCloudSpec) contextValidateStorageClasses(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.StorageClasses); i++ {
+
+		if m.StorageClasses[i] != nil {
+			if err := m.StorageClasses[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("storageClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("storageClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *KubevirtCloudSpec) contextValidateVolumeSnapshotClasses(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.VolumeSnapshotClasses); i++ {
+
+		if m.VolumeSnapshotClasses[i] != nil {
+			if err := m.VolumeSnapshotClasses[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("volumeSnapshotClasses" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("volumeSnapshotClasses" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *KubevirtCloudSpec) contextValidateCredentialsReference(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.CredentialsReference != nil {
@@ -145,6 +301,22 @@ func (m *KubevirtCloudSpec) contextValidateCredentialsReference(ctx context.Cont
 				return ve.ValidateName("credentialsReference")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("credentialsReference")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *KubevirtCloudSpec) contextValidateCsiDriverOperator(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.CsiDriverOperator != nil {
+		if err := m.CsiDriverOperator.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("csiDriverOperator")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("csiDriverOperator")
 			}
 			return err
 		}

@@ -22,6 +22,9 @@ type OpenstackNodeSpec struct {
 	// if not set, the default AZ from the Datacenter spec will be used
 	AvailabilityZone string `json:"availabilityZone,omitempty"`
 
+	// ConfigDrive enables a configuration drive that will be attached to the instance when it boots.
+	ConfigDrive bool `json:"configDrive,omitempty"`
+
 	// instance flavor
 	// Required: true
 	Flavor *string `json:"flavor"`
@@ -38,6 +41,9 @@ type OpenstackNodeSpec struct {
 
 	// if set, the rootDisk will be a volume. If not, the rootDisk will be on ephemeral storage and its size will be derived from the flavor
 	RootDiskSizeGB int64 `json:"diskSize,omitempty"`
+
+	// UUID of the server group, used to configure affinity or anti-affinity of the VM instances relative to hypervisor
+	ServerGroup string `json:"serverGroup,omitempty"`
 
 	// Additional metadata to set
 	Tags map[string]string `json:"tags,omitempty"`

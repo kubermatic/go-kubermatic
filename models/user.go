@@ -43,6 +43,12 @@ type User struct {
 	// IsAdmin indicates admin role
 	IsAdmin bool `json:"isAdmin,omitempty"`
 
+	// IsGlobalViewer indicates GlobalViewer role
+	IsGlobalViewer bool `json:"isGlobalViewer,omitempty"`
+
+	// Labels that can be added to the resource
+	Labels map[string]string `json:"labels,omitempty"`
+
 	// LastSeen holds a time in UTC format when the user has been using the API last time
 	// Format: date-time
 	LastSeen strfmt.DateTime `json:"lastSeen,omitempty"`
@@ -53,6 +59,10 @@ type User struct {
 	// Projects holds the list of project the user belongs to
 	// along with the group names
 	Projects []*ProjectGroup `json:"projects"`
+
+	// ReadAnnouncements holds the IDs of admin announcements that the user has read.
+	// +optional
+	ReadAnnouncements []string `json:"readAnnouncements"`
 
 	// user settings
 	UserSettings *UserSettings `json:"userSettings,omitempty"`

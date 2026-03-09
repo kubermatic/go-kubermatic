@@ -39,11 +39,17 @@ type CloudSpec struct {
 	// azure
 	Azure *AzureCloudSpec `json:"azure,omitempty"`
 
+	// baremetal
+	Baremetal *BaremetalCloudSpec `json:"baremetal,omitempty"`
+
 	// bringyourown
 	Bringyourown BringYourOwnCloudSpec `json:"bringyourown,omitempty"`
 
 	// digitalocean
 	Digitalocean *DigitaloceanCloudSpec `json:"digitalocean,omitempty"`
+
+	// edge
+	Edge EdgeCloudSpec `json:"edge,omitempty"`
 
 	// fake
 	Fake *FakeCloudSpec `json:"fake,omitempty"`
@@ -62,9 +68,6 @@ type CloudSpec struct {
 
 	// openstack
 	Openstack *OpenstackCloudSpec `json:"openstack,omitempty"`
-
-	// packet
-	Packet *PacketCloudSpec `json:"packet,omitempty"`
 
 	// vmwareclouddirector
 	Vmwareclouddirector *VMwareCloudDirectorCloudSpec `json:"vmwareclouddirector,omitempty"`
@@ -93,6 +96,10 @@ func (m *CloudSpec) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateBaremetal(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateDigitalocean(formats); err != nil {
 		res = append(res, err)
 	}
@@ -118,10 +125,6 @@ func (m *CloudSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateOpenstack(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePacket(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -207,6 +210,25 @@ func (m *CloudSpec) validateAzure(formats strfmt.Registry) error {
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CloudSpec) validateBaremetal(formats strfmt.Registry) error {
+	if swag.IsZero(m.Baremetal) { // not required
+		return nil
+	}
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
 			}
 			return err
 		}
@@ -348,25 +370,6 @@ func (m *CloudSpec) validateOpenstack(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *CloudSpec) validatePacket(formats strfmt.Registry) error {
-	if swag.IsZero(m.Packet) { // not required
-		return nil
-	}
-
-	if m.Packet != nil {
-		if err := m.Packet.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("packet")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("packet")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *CloudSpec) validateVmwareclouddirector(formats strfmt.Registry) error {
 	if swag.IsZero(m.Vmwareclouddirector) { // not required
 		return nil
@@ -425,6 +428,10 @@ func (m *CloudSpec) ContextValidate(ctx context.Context, formats strfmt.Registry
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBaremetal(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDigitalocean(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -450,10 +457,6 @@ func (m *CloudSpec) ContextValidate(ctx context.Context, formats strfmt.Registry
 	}
 
 	if err := m.contextValidateOpenstack(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidatePacket(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -527,6 +530,22 @@ func (m *CloudSpec) contextValidateAzure(ctx context.Context, formats strfmt.Reg
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *CloudSpec) contextValidateBaremetal(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
 			}
 			return err
 		}
@@ -639,22 +658,6 @@ func (m *CloudSpec) contextValidateOpenstack(ctx context.Context, formats strfmt
 				return ve.ValidateName("openstack")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("openstack")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *CloudSpec) contextValidatePacket(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Packet != nil {
-		if err := m.Packet.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("packet")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("packet")
 			}
 			return err
 		}

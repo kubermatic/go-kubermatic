@@ -7,45 +7,463 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // GlobalSettings GlobalSettings defines global settings
 //
 // swagger:model GlobalSettings
 type GlobalSettings struct {
-	SettingSpec
-}
 
-// UnmarshalJSON unmarshals this object from a JSON structure
-func (m *GlobalSettings) UnmarshalJSON(raw []byte) error {
-	// AO0
-	var aO0 SettingSpec
-	if err := swag.ReadJSON(raw, &aO0); err != nil {
-		return err
-	}
-	m.SettingSpec = aO0
+	// AllowedOperatingSystems shows the available operating systems to use in the machine deployment.
+	AllowedOperatingSystems map[string]bool `json:"allowedOperatingSystems,omitempty"`
 
-	return nil
-}
+	// The announcement feature allows administrators to broadcast important messages to all users.
+	Announcements map[string]Announcement `json:"announcements,omitempty"`
 
-// MarshalJSON marshals this object to a JSON structure
-func (m GlobalSettings) MarshalJSON() ([]byte, error) {
-	_parts := make([][]byte, 0, 1)
+	// DefaultNodeCount is the default number of replicas for the initial MachineDeployment.
+	DefaultNodeCount int8 `json:"defaultNodeCount,omitempty"`
 
-	aO0, err := swag.WriteJSON(m.SettingSpec)
-	if err != nil {
-		return nil, err
-	}
-	_parts = append(_parts, aO0)
-	return swag.ConcatJSON(_parts...), nil
+	// DisableAdminKubeconfig disables the admin kubeconfig functionality on the dashboard.
+	DisableAdminKubeconfig bool `json:"disableAdminKubeconfig,omitempty"`
+
+	// DisableChangelogPopup disables the changelog popup in KKP dashboard.
+	DisableChangelogPopup bool `json:"disableChangelogPopup,omitempty"`
+
+	// DisplayDemoInfo controls whether a a link to the KKP API documentation is shown in the footer.
+	DisplayAPIDocs bool `json:"displayAPIDocs,omitempty"`
+
+	// DisplayDemoInfo controls whether a "Demo System" hint is shown in the footer.
+	DisplayDemoInfo bool `json:"displayDemoInfo,omitempty"`
+
+	// DisplayDemoInfo controls whether a a link to TOS is shown in the footer.
+	DisplayTermsOfService bool `json:"displayTermsOfService,omitempty"`
+
+	// EnableClusterBackups enables the Cluster Backup feature in the dashboard.
+	EnableClusterBackups bool `json:"enableClusterBackups,omitempty"`
+
+	// EnableDashboard enables the link to the Kubernetes dashboard for a user cluster.
+	EnableDashboard bool `json:"enableDashboard,omitempty"`
+
+	// EnableEtcdBackup enables the etcd Backup feature in the dashboard.
+	EnableEtcdBackup bool `json:"enableEtcdBackup,omitempty"`
+
+	// enable external cluster import
+	EnableExternalClusterImport bool `json:"enableExternalClusterImport,omitempty"`
+
+	// enable o ID c kubeconfig
+	EnableOIDCKubeconfig bool `json:"enableOIDCKubeconfig,omitempty"`
+
+	// EnableShareCluster enables the Share Cluster feature for the user clusters.
+	EnableShareCluster bool `json:"enableShareCluster,omitempty"`
+
+	// EnableWebTerminal enables the Web Terminal feature for the user clusters.
+	EnableWebTerminal bool `json:"enableWebTerminal,omitempty"`
+
+	// mla alertmanager prefix
+	MlaAlertmanagerPrefix string `json:"mlaAlertmanagerPrefix,omitempty"`
+
+	// mla grafana prefix
+	MlaGrafanaPrefix string `json:"mlaGrafanaPrefix,omitempty"`
+
+	// restrict project creation
+	RestrictProjectCreation bool `json:"restrictProjectCreation,omitempty"`
+
+	// restrict project deletion
+	RestrictProjectDeletion bool `json:"restrictProjectDeletion,omitempty"`
+
+	// restrict project modification
+	RestrictProjectModification bool `json:"restrictProjectModification,omitempty"`
+
+	// StaticLabels are a list of labels that can be used for the clusters.
+	StaticLabels []*StaticLabel `json:"staticLabels"`
+
+	// UserProjectsLimit is the maximum number of projects a user can create.
+	UserProjectsLimit int64 `json:"userProjectsLimit,omitempty"`
+
+	// annotations
+	Annotations *AnnotationSettings `json:"annotations,omitempty"`
+
+	// cleanup options
+	CleanupOptions *CleanupOptions `json:"cleanupOptions,omitempty"`
+
+	// cluster backup options
+	ClusterBackupOptions *ClusterBackupOptions `json:"clusterBackupOptions,omitempty"`
+
+	// custom links
+	CustomLinks CustomLinks `json:"customLinks,omitempty"`
+
+	// default quota
+	DefaultQuota *ProjectResourceQuota `json:"defaultQuota,omitempty"`
+
+	// machine deployment options
+	MachineDeploymentOptions *MachineDeploymentOptions `json:"machineDeploymentOptions,omitempty"`
+
+	// machine deployment VM resource quota
+	MachineDeploymentVMResourceQuota *MachineFlavorFilter `json:"machineDeploymentVMResourceQuota,omitempty"`
+
+	// mla options
+	MlaOptions *MlaOptions `json:"mlaOptions,omitempty"`
+
+	// notifications
+	Notifications *NotificationsOptions `json:"notifications,omitempty"`
+
+	// opa options
+	OpaOptions *OpaOptions `json:"opaOptions,omitempty"`
+
+	// provider configuration
+	ProviderConfiguration *ProviderConfiguration `json:"providerConfiguration,omitempty"`
+
+	// web terminal options
+	WebTerminalOptions *WebTerminalOptions `json:"webTerminalOptions,omitempty"`
 }
 
 // Validate validates this global settings
 func (m *GlobalSettings) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateAnnouncements(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStaticLabels(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateAnnotations(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCleanupOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateClusterBackupOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCustomLinks(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDefaultQuota(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMachineDeploymentOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMachineDeploymentVMResourceQuota(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMlaOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNotifications(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOpaOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateProviderConfiguration(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateWebTerminalOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *GlobalSettings) validateAnnouncements(formats strfmt.Registry) error {
+	if swag.IsZero(m.Announcements) { // not required
+		return nil
+	}
+
+	for k := range m.Announcements {
+
+		if err := validate.Required("announcements"+"."+k, "body", m.Announcements[k]); err != nil {
+			return err
+		}
+		if val, ok := m.Announcements[k]; ok {
+			if err := val.Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("announcements" + "." + k)
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("announcements" + "." + k)
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateStaticLabels(formats strfmt.Registry) error {
+	if swag.IsZero(m.StaticLabels) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.StaticLabels); i++ {
+		if swag.IsZero(m.StaticLabels[i]) { // not required
+			continue
+		}
+
+		if m.StaticLabels[i] != nil {
+			if err := m.StaticLabels[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("staticLabels" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("staticLabels" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateAnnotations(formats strfmt.Registry) error {
+	if swag.IsZero(m.Annotations) { // not required
+		return nil
+	}
+
+	if m.Annotations != nil {
+		if err := m.Annotations.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("annotations")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("annotations")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateCleanupOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.CleanupOptions) { // not required
+		return nil
+	}
+
+	if m.CleanupOptions != nil {
+		if err := m.CleanupOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("cleanupOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cleanupOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateClusterBackupOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.ClusterBackupOptions) { // not required
+		return nil
+	}
+
+	if m.ClusterBackupOptions != nil {
+		if err := m.ClusterBackupOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("clusterBackupOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("clusterBackupOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateCustomLinks(formats strfmt.Registry) error {
+	if swag.IsZero(m.CustomLinks) { // not required
+		return nil
+	}
+
+	if err := m.CustomLinks.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("customLinks")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("customLinks")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateDefaultQuota(formats strfmt.Registry) error {
+	if swag.IsZero(m.DefaultQuota) { // not required
+		return nil
+	}
+
+	if m.DefaultQuota != nil {
+		if err := m.DefaultQuota.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("defaultQuota")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("defaultQuota")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateMachineDeploymentOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.MachineDeploymentOptions) { // not required
+		return nil
+	}
+
+	if m.MachineDeploymentOptions != nil {
+		if err := m.MachineDeploymentOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineDeploymentOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineDeploymentOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateMachineDeploymentVMResourceQuota(formats strfmt.Registry) error {
+	if swag.IsZero(m.MachineDeploymentVMResourceQuota) { // not required
+		return nil
+	}
+
+	if m.MachineDeploymentVMResourceQuota != nil {
+		if err := m.MachineDeploymentVMResourceQuota.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineDeploymentVMResourceQuota")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineDeploymentVMResourceQuota")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateMlaOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.MlaOptions) { // not required
+		return nil
+	}
+
+	if m.MlaOptions != nil {
+		if err := m.MlaOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mlaOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mlaOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateNotifications(formats strfmt.Registry) error {
+	if swag.IsZero(m.Notifications) { // not required
+		return nil
+	}
+
+	if m.Notifications != nil {
+		if err := m.Notifications.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("notifications")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("notifications")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateOpaOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.OpaOptions) { // not required
+		return nil
+	}
+
+	if m.OpaOptions != nil {
+		if err := m.OpaOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("opaOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("opaOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateProviderConfiguration(formats strfmt.Registry) error {
+	if swag.IsZero(m.ProviderConfiguration) { // not required
+		return nil
+	}
+
+	if m.ProviderConfiguration != nil {
+		if err := m.ProviderConfiguration.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("providerConfiguration")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("providerConfiguration")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) validateWebTerminalOptions(formats strfmt.Registry) error {
+	if swag.IsZero(m.WebTerminalOptions) { // not required
+		return nil
+	}
+
+	if m.WebTerminalOptions != nil {
+		if err := m.WebTerminalOptions.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("webTerminalOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("webTerminalOptions")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -53,13 +471,307 @@ func (m *GlobalSettings) Validate(formats strfmt.Registry) error {
 func (m *GlobalSettings) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	// validation for a type composition with SettingSpec
-	if err := m.SettingSpec.ContextValidate(ctx, formats); err != nil {
+	if err := m.contextValidateAnnouncements(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateStaticLabels(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateAnnotations(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateCleanupOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateClusterBackupOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateCustomLinks(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateDefaultQuota(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMachineDeploymentOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMachineDeploymentVMResourceQuota(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateMlaOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNotifications(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateOpaOptions(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateProviderConfiguration(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateWebTerminalOptions(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateAnnouncements(ctx context.Context, formats strfmt.Registry) error {
+
+	for k := range m.Announcements {
+
+		if val, ok := m.Announcements[k]; ok {
+			if err := val.ContextValidate(ctx, formats); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateStaticLabels(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.StaticLabels); i++ {
+
+		if m.StaticLabels[i] != nil {
+			if err := m.StaticLabels[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("staticLabels" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("staticLabels" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateAnnotations(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Annotations != nil {
+		if err := m.Annotations.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("annotations")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("annotations")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateCleanupOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.CleanupOptions != nil {
+		if err := m.CleanupOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("cleanupOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("cleanupOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateClusterBackupOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ClusterBackupOptions != nil {
+		if err := m.ClusterBackupOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("clusterBackupOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("clusterBackupOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateCustomLinks(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.CustomLinks.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("customLinks")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("customLinks")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateDefaultQuota(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DefaultQuota != nil {
+		if err := m.DefaultQuota.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("defaultQuota")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("defaultQuota")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateMachineDeploymentOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MachineDeploymentOptions != nil {
+		if err := m.MachineDeploymentOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineDeploymentOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineDeploymentOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateMachineDeploymentVMResourceQuota(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MachineDeploymentVMResourceQuota != nil {
+		if err := m.MachineDeploymentVMResourceQuota.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("machineDeploymentVMResourceQuota")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("machineDeploymentVMResourceQuota")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateMlaOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.MlaOptions != nil {
+		if err := m.MlaOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("mlaOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("mlaOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateNotifications(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Notifications != nil {
+		if err := m.Notifications.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("notifications")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("notifications")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateOpaOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.OpaOptions != nil {
+		if err := m.OpaOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("opaOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("opaOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateProviderConfiguration(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.ProviderConfiguration != nil {
+		if err := m.ProviderConfiguration.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("providerConfiguration")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("providerConfiguration")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *GlobalSettings) contextValidateWebTerminalOptions(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.WebTerminalOptions != nil {
+		if err := m.WebTerminalOptions.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("webTerminalOptions")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("webTerminalOptions")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *GlobalSettings) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *GlobalSettings) UnmarshalBinary(b []byte) error {
+	var res GlobalSettings
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
 	return nil
 }
