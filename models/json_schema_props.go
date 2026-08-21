@@ -23,17 +23,17 @@ type JSONSchemaProps struct {
 	// dollar schema
 	DollarSchema JSONSchemaURL `json:"$schema,omitempty"`
 
-	// all of
+	// +listType=atomic
 	AllOf []*JSONSchemaProps `json:"allOf"`
 
-	// any of
+	// +listType=atomic
 	AnyOf []*JSONSchemaProps `json:"anyOf"`
 
 	// description
 	Description string `json:"description,omitempty"`
 
-	// enum
-	Enum []*JSON `json:"enum"`
+	// +listType=atomic
+	Enum []JSON `json:"enum"`
 
 	// exclusive maximum
 	ExclusiveMaximum bool `json:"exclusiveMaximum,omitempty"`
@@ -102,7 +102,7 @@ type JSONSchemaProps struct {
 	// nullable
 	Nullable bool `json:"nullable,omitempty"`
 
-	// one of
+	// +listType=atomic
 	OneOf []*JSONSchemaProps `json:"oneOf"`
 
 	// pattern
@@ -117,7 +117,7 @@ type JSONSchemaProps struct {
 	// ref
 	Ref string `json:"$ref,omitempty"`
 
-	// required
+	// +listType=atomic
 	Required []string `json:"required"`
 
 	// title
@@ -164,6 +164,7 @@ type JSONSchemaProps struct {
 	// to ensure those properties are present for all list items.
 	//
 	// +optional
+	// +listType=atomic
 	XListMapKeys []string `json:"x-kubernetes-list-map-keys"`
 
 	// x-kubernetes-list-type annotates an array to further describe its topology.
@@ -211,7 +212,7 @@ type JSONSchemaProps struct {
 	AdditionalProperties *JSONSchemaPropsOrBool `json:"additionalProperties,omitempty"`
 
 	// default
-	Default *JSON `json:"default,omitempty"`
+	Default JSON `json:"default,omitempty"`
 
 	// definitions
 	Definitions JSONSchemaDefinitions `json:"definitions,omitempty"`
@@ -220,7 +221,7 @@ type JSONSchemaProps struct {
 	Dependencies JSONSchemaDependencies `json:"dependencies,omitempty"`
 
 	// example
-	Example *JSON `json:"example,omitempty"`
+	Example JSON `json:"example,omitempty"`
 
 	// external docs
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty"`
@@ -251,10 +252,6 @@ func (m *JSONSchemaProps) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateEnum(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateOneOf(formats); err != nil {
 		res = append(res, err)
 	}
@@ -275,19 +272,11 @@ func (m *JSONSchemaProps) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateDefault(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateDefinitions(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateDependencies(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateExample(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -372,32 +361,6 @@ func (m *JSONSchemaProps) validateAnyOf(formats strfmt.Registry) error {
 					return ve.ValidateName("anyOf" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
 					return ce.ValidateName("anyOf" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *JSONSchemaProps) validateEnum(formats strfmt.Registry) error {
-	if swag.IsZero(m.Enum) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.Enum); i++ {
-		if swag.IsZero(m.Enum[i]) { // not required
-			continue
-		}
-
-		if m.Enum[i] != nil {
-			if err := m.Enum[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("enum" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("enum" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -524,25 +487,6 @@ func (m *JSONSchemaProps) validateAdditionalProperties(formats strfmt.Registry) 
 	return nil
 }
 
-func (m *JSONSchemaProps) validateDefault(formats strfmt.Registry) error {
-	if swag.IsZero(m.Default) { // not required
-		return nil
-	}
-
-	if m.Default != nil {
-		if err := m.Default.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("default")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("default")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *JSONSchemaProps) validateDefinitions(formats strfmt.Registry) error {
 	if swag.IsZero(m.Definitions) { // not required
 		return nil
@@ -573,25 +517,6 @@ func (m *JSONSchemaProps) validateDependencies(formats strfmt.Registry) error {
 				return ve.ValidateName("dependencies")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("dependencies")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *JSONSchemaProps) validateExample(formats strfmt.Registry) error {
-	if swag.IsZero(m.Example) { // not required
-		return nil
-	}
-
-	if m.Example != nil {
-		if err := m.Example.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("example")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("example")
 			}
 			return err
 		}
@@ -690,10 +615,6 @@ func (m *JSONSchemaProps) ContextValidate(ctx context.Context, formats strfmt.Re
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateEnum(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateOneOf(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -714,19 +635,11 @@ func (m *JSONSchemaProps) ContextValidate(ctx context.Context, formats strfmt.Re
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateDefault(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateDefinitions(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.contextValidateDependencies(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateExample(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -796,26 +709,6 @@ func (m *JSONSchemaProps) contextValidateAnyOf(ctx context.Context, formats strf
 					return ve.ValidateName("anyOf" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
 					return ce.ValidateName("anyOf" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *JSONSchemaProps) contextValidateEnum(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.Enum); i++ {
-
-		if m.Enum[i] != nil {
-			if err := m.Enum[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("enum" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("enum" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -908,22 +801,6 @@ func (m *JSONSchemaProps) contextValidateAdditionalProperties(ctx context.Contex
 	return nil
 }
 
-func (m *JSONSchemaProps) contextValidateDefault(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Default != nil {
-		if err := m.Default.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("default")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("default")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *JSONSchemaProps) contextValidateDefinitions(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Definitions.ContextValidate(ctx, formats); err != nil {
@@ -947,22 +824,6 @@ func (m *JSONSchemaProps) contextValidateDependencies(ctx context.Context, forma
 			return ce.ValidateName("dependencies")
 		}
 		return err
-	}
-
-	return nil
-}
-
-func (m *JSONSchemaProps) contextValidateExample(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Example != nil {
-		if err := m.Example.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("example")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("example")
-			}
-			return err
-		}
 	}
 
 	return nil

@@ -7,7 +7,9 @@ package models
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -17,8 +19,19 @@ import (
 // swagger:model Quota
 type Quota struct {
 
+	// Accelerators contains provider-specific accelerator resource limits.
+	// A nil value means the field was omitted; an empty slice explicitly clears all limits.
+	Accelerators []*AcceleratorQuota `json:"accelerators"`
+
 	// CPU holds the quantity of CPU.
 	CPU int64 `json:"cpu,omitempty"`
+
+	// EnableAcceleratorAccounting requests that accelerator accounting be activated for the quota.
+	// It is only honoured on update requests and is never set on responses; read the current state
+	// from ResourceQuota.AcceleratorAccountingEnabled instead. A nil value leaves the current state
+	// untouched and true activates accounting, which is irreversible; false is rejected once
+	// accounting is enabled.
+	EnableAcceleratorAccounting bool `json:"enableAcceleratorAccounting,omitempty"`
 
 	// Memory represents the RAM amount. Denoted in GB, rounded to 2 decimal places.
 	Memory float64 `json:"memory,omitempty"`
@@ -29,11 +42,75 @@ type Quota struct {
 
 // Validate validates this quota
 func (m *Quota) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateAccelerators(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this quota based on context it is used
+func (m *Quota) validateAccelerators(formats strfmt.Registry) error {
+	if swag.IsZero(m.Accelerators) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Accelerators); i++ {
+		if swag.IsZero(m.Accelerators[i]) { // not required
+			continue
+		}
+
+		if m.Accelerators[i] != nil {
+			if err := m.Accelerators[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("accelerators" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("accelerators" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ContextValidate validate this quota based on the context it is used
 func (m *Quota) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateAccelerators(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Quota) contextValidateAccelerators(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Accelerators); i++ {
+
+		if m.Accelerators[i] != nil {
+			if err := m.Accelerators[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("accelerators" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("accelerators" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

@@ -20,8 +20,6 @@ import (
 type LabelSelectorRequirement struct {
 
 	// key is the label key that the selector applies to.
-	// +patchMergeKey=key
-	// +patchStrategy=merge
 	Key string `json:"key,omitempty"`
 
 	// values is an array of string values. If the operator is In or NotIn,
@@ -29,6 +27,7 @@ type LabelSelectorRequirement struct {
 	// the values array must be empty. This array is replaced during a strategic
 	// merge patch.
 	// +optional
+	// +listType=atomic
 	Values []string `json:"values"`
 
 	// operator

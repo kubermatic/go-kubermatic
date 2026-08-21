@@ -17,35 +17,39 @@ import (
 // swagger:model Openstack
 type Openstack struct {
 
-	// application credential ID
+	// Application credential ID to authenticate in combination with an application credential secret (which is not the user's password).
 	ApplicationCredentialID string `json:"applicationCredentialID,omitempty"`
 
-	// application credential secret
+	// Application credential secret (which is not the user's password) to authenticate in combination with an application credential ID.
 	ApplicationCredentialSecret string `json:"applicationCredentialSecret,omitempty"`
 
 	// If datacenter is set, this preset is only applicable to the
 	// configured datacenter.
 	Datacenter string `json:"datacenter,omitempty"`
 
-	// domain
+	// Domain holds the name of the identity service (keystone) domain.
 	Domain string `json:"domain,omitempty"`
 
 	// Only enabled presets will be available in the KKP dashboard.
 	Enabled bool `json:"enabled,omitempty"`
 
-	// floating IP pool
+	// FloatingIPPool holds the name of the public network The public network is reachable from the outside world and should provide the pool of IP addresses to choose from.
 	FloatingIPPool string `json:"floatingIPPool,omitempty"`
 
-	// network
+	// IsCustomizable marks a preset as editable on the KKP UI; Customizable presets still have the credentials obscured on the UI, but other fields that are not considered private are displayed during cluster creation. Users can then update those fields, if required.
+	// NOTE: This is only supported for OpenStack Cloud Provider in KKP 2.26. Support for other providers will be added later on.
+	IsCustomizable bool `json:"isCustomizable,omitempty"`
+
+	// Network holds the name of the internal network When specified, all worker nodes will be attached to this network. If not specified, a network, subnet & router will be created.
 	Network string `json:"network,omitempty"`
 
 	// password
 	Password string `json:"password,omitempty"`
 
-	// project
+	// Project, formally known as tenant.
 	Project string `json:"project,omitempty"`
 
-	// project ID
+	// ProjectID, formally known as tenantID.
 	ProjectID string `json:"projectID,omitempty"`
 
 	// router ID

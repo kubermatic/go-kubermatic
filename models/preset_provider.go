@@ -21,8 +21,17 @@ type PresetProvider struct {
 	// enabled
 	Enabled bool `json:"enabled,omitempty"`
 
+	// is customizable
+	IsCustomizable bool `json:"isCustomizable,omitempty"`
+
 	// name
 	Name ProviderType `json:"name,omitempty"`
+
+	// openstack
+	Openstack *OpenStackAPIPreset `json:"openstack,omitempty"`
+
+	// vmware cloud director
+	VmwareCloudDirector *VMwareCloudDirectorAPIPreset `json:"vmwareCloudDirector,omitempty"`
 }
 
 // Validate validates this preset provider
@@ -30,6 +39,14 @@ func (m *PresetProvider) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOpenstack(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateVmwareCloudDirector(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -56,11 +73,57 @@ func (m *PresetProvider) validateName(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *PresetProvider) validateOpenstack(formats strfmt.Registry) error {
+	if swag.IsZero(m.Openstack) { // not required
+		return nil
+	}
+
+	if m.Openstack != nil {
+		if err := m.Openstack.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("openstack")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("openstack")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PresetProvider) validateVmwareCloudDirector(formats strfmt.Registry) error {
+	if swag.IsZero(m.VmwareCloudDirector) { // not required
+		return nil
+	}
+
+	if m.VmwareCloudDirector != nil {
+		if err := m.VmwareCloudDirector.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("vmwareCloudDirector")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("vmwareCloudDirector")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this preset provider based on the context it is used
 func (m *PresetProvider) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateName(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateOpenstack(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateVmwareCloudDirector(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -79,6 +142,38 @@ func (m *PresetProvider) contextValidateName(ctx context.Context, formats strfmt
 			return ce.ValidateName("name")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *PresetProvider) contextValidateOpenstack(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Openstack != nil {
+		if err := m.Openstack.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("openstack")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("openstack")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PresetProvider) contextValidateVmwareCloudDirector(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.VmwareCloudDirector != nil {
+		if err := m.VmwareCloudDirector.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("vmwareCloudDirector")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("vmwareCloudDirector")
+			}
+			return err
+		}
 	}
 
 	return nil

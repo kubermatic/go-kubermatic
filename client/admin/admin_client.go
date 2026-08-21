@@ -34,6 +34,8 @@ type ClientService interface {
 
 	CreateOrUpdateMeteringCredentials(params *CreateOrUpdateMeteringCredentialsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateOrUpdateMeteringCredentialsOK, error)
 
+	CreatePolicyTemplate(params *CreatePolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreatePolicyTemplateOK, error)
+
 	CreateSeed(params *CreateSeedParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateSeedOK, error)
 
 	DeleteAdmissionPlugin(params *DeleteAdmissionPluginParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteAdmissionPluginOK, error)
@@ -41,6 +43,8 @@ type ClientService interface {
 	DeleteBackupDestination(params *DeleteBackupDestinationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteBackupDestinationOK, error)
 
 	DeleteMeteringReportConfiguration(params *DeleteMeteringReportConfigurationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteMeteringReportConfigurationOK, error)
+
+	DeletePolicyTemplate(params *DeletePolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeletePolicyTemplateOK, error)
 
 	DeleteSeed(params *DeleteSeedParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteSeedOK, error)
 
@@ -54,15 +58,21 @@ type ClientService interface {
 
 	GetMeteringReportConfiguration(params *GetMeteringReportConfigurationParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetMeteringReportConfigurationOK, error)
 
+	GetPolicyTemplate(params *GetPolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetPolicyTemplateOK, error)
+
 	GetSeed(params *GetSeedParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetSeedOK, error)
 
 	ListAdmissionPlugins(params *ListAdmissionPluginsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListAdmissionPluginsOK, error)
 
 	ListMeteringReportConfigurations(params *ListMeteringReportConfigurationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListMeteringReportConfigurationsOK, error)
 
+	ListPolicyTemplate(params *ListPolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListPolicyTemplateOK, error)
+
 	ListSeeds(params *ListSeedsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListSeedsOK, error)
 
 	PatchKubermaticSettings(params *PatchKubermaticSettingsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchKubermaticSettingsOK, error)
+
+	PatchpolicyTemplate(params *PatchpolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchpolicyTemplateOK, error)
 
 	SetAdmin(params *SetAdminParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SetAdminOK, error)
 
@@ -186,6 +196,44 @@ func (a *Client) CreateOrUpdateMeteringCredentials(params *CreateOrUpdateMeterin
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*CreateOrUpdateMeteringCredentialsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+CreatePolicyTemplate Create policy template. Only available in Kubermatic Enterprise Edition
+*/
+func (a *Client) CreatePolicyTemplate(params *CreatePolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreatePolicyTemplateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCreatePolicyTemplateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "createPolicyTemplate",
+		Method:             "POST",
+		PathPattern:        "/api/v2/policytemplates",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &CreatePolicyTemplateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*CreatePolicyTemplateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*CreatePolicyTemplateDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -338,6 +386,44 @@ func (a *Client) DeleteMeteringReportConfiguration(params *DeleteMeteringReportC
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*DeleteMeteringReportConfigurationDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+DeletePolicyTemplate Delete policy template, If the query parameter project_id is set, the endpoint will delete the policy template if it is associated with the specified project_id. Only available in Kubermatic Enterprise Edition
+*/
+func (a *Client) DeletePolicyTemplate(params *DeletePolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeletePolicyTemplateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDeletePolicyTemplateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "deletePolicyTemplate",
+		Method:             "DELETE",
+		PathPattern:        "/api/v2/policytemplates/{template_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DeletePolicyTemplateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DeletePolicyTemplateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DeletePolicyTemplateDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -570,6 +656,44 @@ func (a *Client) GetMeteringReportConfiguration(params *GetMeteringReportConfigu
 }
 
 /*
+GetPolicyTemplate Get policy template, If the query parameter project_id is set, the endpoint will return the policy template if it is associated with the specified project_id. Only available in Kubermatic Enterprise Edition
+*/
+func (a *Client) GetPolicyTemplate(params *GetPolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetPolicyTemplateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetPolicyTemplateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getPolicyTemplate",
+		Method:             "GET",
+		PathPattern:        "/api/v2/policytemplates/{template_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GetPolicyTemplateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetPolicyTemplateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetPolicyTemplateDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 GetSeed returns the seed object
 */
 func (a *Client) GetSeed(params *GetSeedParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetSeedOK, error) {
@@ -684,6 +808,44 @@ func (a *Client) ListMeteringReportConfigurations(params *ListMeteringReportConf
 }
 
 /*
+ListPolicyTemplate List all policy templates, If query parameter `project_id` is set then the endpoint will return only the policy templates that are associated with the project. Only available in Kubermatic Enterprise Edition
+*/
+func (a *Client) ListPolicyTemplate(params *ListPolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListPolicyTemplateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListPolicyTemplateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "listPolicyTemplate",
+		Method:             "GET",
+		PathPattern:        "/api/v2/policytemplates",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListPolicyTemplateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListPolicyTemplateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListPolicyTemplateDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 ListSeeds returns all seeds from the c r ds
 */
 func (a *Client) ListSeeds(params *ListSeedsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListSeedsOK, error) {
@@ -756,6 +918,44 @@ func (a *Client) PatchKubermaticSettings(params *PatchKubermaticSettingsParams, 
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*PatchKubermaticSettingsDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+PatchpolicyTemplate Patch policy template. Only available in Kubermatic Enterprise Edition
+*/
+func (a *Client) PatchpolicyTemplate(params *PatchpolicyTemplateParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PatchpolicyTemplateOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPatchpolicyTemplateParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "patchpolicyTemplate",
+		Method:             "PATCH",
+		PathPattern:        "/api/v2/policytemplates/{template_name}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &PatchpolicyTemplateReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*PatchpolicyTemplateOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*PatchpolicyTemplateDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

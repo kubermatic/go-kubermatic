@@ -45,6 +45,9 @@ type PresetSpec struct {
 	// azure
 	Azure *Azure `json:"azure,omitempty"`
 
+	// baremetal
+	Baremetal *Baremetal `json:"baremetal,omitempty"`
+
 	// digitalocean
 	Digitalocean *Digitalocean `json:"digitalocean,omitempty"`
 
@@ -71,9 +74,6 @@ type PresetSpec struct {
 
 	// openstack
 	Openstack *Openstack `json:"openstack,omitempty"`
-
-	// packet
-	Packet *Packet `json:"packet,omitempty"`
 
 	// vmwareclouddirector
 	Vmwareclouddirector *VMwareCloudDirector `json:"vmwareclouddirector,omitempty"`
@@ -103,6 +103,10 @@ func (m *PresetSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateAzure(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateBaremetal(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -139,10 +143,6 @@ func (m *PresetSpec) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateOpenstack(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePacket(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -247,6 +247,25 @@ func (m *PresetSpec) validateAzure(formats strfmt.Registry) error {
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PresetSpec) validateBaremetal(formats strfmt.Registry) error {
+	if swag.IsZero(m.Baremetal) { // not required
+		return nil
+	}
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
 			}
 			return err
 		}
@@ -426,25 +445,6 @@ func (m *PresetSpec) validateOpenstack(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PresetSpec) validatePacket(formats strfmt.Registry) error {
-	if swag.IsZero(m.Packet) { // not required
-		return nil
-	}
-
-	if m.Packet != nil {
-		if err := m.Packet.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("packet")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("packet")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *PresetSpec) validateVmwareclouddirector(formats strfmt.Registry) error {
 	if swag.IsZero(m.Vmwareclouddirector) { // not required
 		return nil
@@ -507,6 +507,10 @@ func (m *PresetSpec) ContextValidate(ctx context.Context, formats strfmt.Registr
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateBaremetal(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDigitalocean(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -540,10 +544,6 @@ func (m *PresetSpec) ContextValidate(ctx context.Context, formats strfmt.Registr
 	}
 
 	if err := m.contextValidateOpenstack(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidatePacket(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -633,6 +633,22 @@ func (m *PresetSpec) contextValidateAzure(ctx context.Context, formats strfmt.Re
 				return ve.ValidateName("azure")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("azure")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *PresetSpec) contextValidateBaremetal(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Baremetal != nil {
+		if err := m.Baremetal.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("baremetal")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("baremetal")
 			}
 			return err
 		}
@@ -777,22 +793,6 @@ func (m *PresetSpec) contextValidateOpenstack(ctx context.Context, formats strfm
 				return ve.ValidateName("openstack")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("openstack")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PresetSpec) contextValidatePacket(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Packet != nil {
-		if err := m.Packet.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("packet")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("packet")
 			}
 			return err
 		}
